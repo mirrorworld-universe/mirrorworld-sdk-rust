@@ -1,17 +1,5 @@
-// pub fn add(left: usize, right: usize) -> usize {
-//     left + right
-// }
-
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-
-//     #[test]
-//     fn it_works() {
-//         let result = add(2, 2);
-//         assert_eq!(result, 4);
-//     }
-// }
+pub const STAING_REQUEST_URL: &str = "https://api.mirrorworld.fun";
+pub const RELEASE_REQUEST_URL: &str = "https://api-staging.mirrorworld.fun";
 pub mod accessors;
 pub mod authentication;
 pub mod event;
