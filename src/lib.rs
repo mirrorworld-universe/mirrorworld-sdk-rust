@@ -1,3 +1,6 @@
+use reqwest::Client;
+use reqwest::header::HeaderMap;
+
 pub const STAGING_REQUEST_URL: &str = "https://api-staging.mirrorworld.fun";
 pub const RELEASE_REQUEST_URL: &str = "https://api.mirrorworld.fun";
 
@@ -26,6 +29,17 @@ pub fn get_basic_url(net: NET_ENV) -> String {
         _ => {"".to_string()}
     };
     s
+}
+
+pub fn get_request_header(api: String, token: String) -> HeaderMap {
+    let mut headers = HeaderMap::new();
+    headers.insert("Content-Type", "application/json".parse().unwrap());
+    headers.insert("x-api-key", api.parse().unwrap());
+
+    let mut authorization: String = "Bearer ".to_string() + &token;
+    headers.insert("authorization", authorization.parse().unwrap());
+
+    headers
 }
 
 pub mod accessors;

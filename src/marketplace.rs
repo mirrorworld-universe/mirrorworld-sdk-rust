@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use serde::Deserialize;
 use serde::Serialize;
 use serde_json::value::Value;
-use crate::{get_basic_url, get_env_name, NET_ENV};
+use crate::{get_basic_url, get_env_name, get_request_header, NET_ENV};
 
 pub struct Marketplace {
     api_key: String,
@@ -35,18 +35,22 @@ pub struct CreateCollectionResp {
     message: Option<String>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CreateSubCollectionResp {
+    status: String,
+    data: Option<CreateCollectionData>,
+    code: u32,
+    message: Option<String>,
+}
+
+
 impl Marketplace {
     fn new(api_key: String, env: NET_ENV, token: String) -> Marketplace {
         Marketplace { api_key: api_key,  net: env, token: token}
     }
 
      async fn create_collection(&self, name: String, symbol: String, metadata_uri: String) -> Result<Option<CreateCollectionData>, Box<dyn Error>> {
-        let mut headers = HeaderMap::new();
-        headers.insert("Content-Type", "application/json".parse().unwrap());
-        headers.insert("x-api-key", self.api_key.parse().unwrap());
-
-        let mut authorization = "Bearer ".to_string() + &self.token.to_string();
-        headers.insert("authorization", authorization.parse().unwrap());
+        let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
         let client = Client::new();
         let mut url_ =  format!("/v1/{}/solana/mint/collection", get_env_name(self.net));
@@ -65,6 +69,25 @@ impl Marketplace {
         
         let response_data = response.json::<CreateCollectionResp>().await?;
         println!("{:#?}", response_data);
+        Ok(response_data.data)
+    }
+
+    // create verified sub collection
+    async fn create_sub_collection(&self, name: String, symbol: String, metadata_uri: String, parent_coll: String) -> Result<Option<CreateCollectionData>, Box<dyn Error>> {
+        let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
+
+        let client = Client::new();
+        let mut url_ =  format!("/v1/{}/solana/mint/sub-collection", get_env_name(self.net));
+        let mut url = get_basic_url(self.net) + &url_;
+
+        let mut data = HashMap::new();
+        data.insert("name", name);
+        data.insert("symbol", symbol);
+        data.insert("url", metadata_uri);
+        data.insert("collection_mint", parent_coll); // parent collection address
+
+        let response = client.post(url).headers(headers).json(&data).send().await?;
+        let response_data = response.json::<CreateSubCollectionResp>().await?;
         Ok(response_data.data)
     }
 }
