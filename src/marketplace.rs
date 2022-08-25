@@ -24,7 +24,7 @@ pub struct CreateCollectionData {
     symbol: String,
     collection: Option<String>,
     signature: String,
-    // status: Option<String>,
+    status: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -32,7 +32,7 @@ pub struct CreateCollectionResp {
     status: String,
     data: Option<CreateCollectionData>,
     code: u32,
-    message: String,
+    message: Option<String>,
 }
 
 impl Marketplace {
@@ -55,7 +55,7 @@ impl Marketplace {
         let mut data = HashMap::new();
         data.insert("name", name);
         data.insert("symbol", symbol);
-        data.insert("metadataUri", metadata_uri);
+        data.insert("url", metadata_uri);
         let response = client
             .post(url)
             .headers(headers)
