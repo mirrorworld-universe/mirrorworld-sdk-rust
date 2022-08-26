@@ -1,8 +1,9 @@
 use std::borrow::Borrow;
 use reqwest::header::HeaderMap;
-use reqwest::{self, Client};
+use reqwest::{self, Client, Url};
 use std::error::Error;
 use std::collections::HashMap;
+use futures::future::ok;
 use serde::Deserialize;
 use serde::Serialize;
 use serde_json::value::Value;
@@ -12,6 +13,14 @@ pub struct Marketplace {
     api_key: String,
     net: NET_ENV,
     token: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Response<T> {
+    status: String,
+    data: Option<T>,
+    code: u32,
+    message: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -27,13 +36,6 @@ pub struct CreateCollectionData {
     status: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateCollectionResp {
-    status: String,
-    data: Option<CreateCollectionData>,
-    code: u32,
-    message: Option<String>,
-}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CreateSubCollectionResp {
@@ -43,6 +45,94 @@ pub struct CreateSubCollectionResp {
     message: Option<String>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GeneralPayload {
+    name: String,
+    symbol: String,
+    url: String,
+    collection_mint: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SolanaMintNftResult {
+    mint_address: String,
+    url: String,
+    update_authority: String,
+    creator_address: String,
+    name: String,
+    symbol: String,
+    collection: String,
+    signature: String,
+    status: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct NftListing {
+    id: usize,
+    type_name: String,
+    wallet_address: String,
+    mint_address: String,
+    price: String,
+    seller_address: String,
+    to_wallet_address: String,
+    signature: String,
+    status: String,
+    update_at: String,
+    create_at: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Creator {
+    address: String,
+    verified: bool,
+    share: f32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Owner {
+    address: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct MetadataAttribute {
+    trait_type: String,
+    value: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SolanaNFTListing {
+    id: usize,
+    #[serde(rename = "tradeState")]
+    trade_state: String,
+    seller: String,
+    metadata: String,
+    #[serde(rename = "purchaseId")]
+    purchase_id: Option<String>,
+    price: f32,
+    #[serde(rename = "tokenSize")]
+    token_size: usize,
+    #[serde(rename = "createdAt")]
+    created_at: String,
+    #[serde(rename = "canceledAt")]
+    canceled_at: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SolanaNFTExtended {
+    name: String,
+    #[serde(rename = "sellerFeeBasisPoints")]
+    seller_fee_basic_points: usize,
+    #[serde(rename = "updateAuthorityAddress")]
+    update_authority_address: String,
+    description: String,
+    image: String,
+    #[serde(rename = "externalUrl")]
+    external_url: String,
+    creators: Vec<Creator>,
+    owner: Owner,
+    attributes: Vec<MetadataAttribute>,
+    listings: Vec<SolanaNFTListing>,
+}
 
 impl Marketplace {
     fn new(api_key: String, env: NET_ENV, token: String) -> Marketplace {
@@ -67,7 +157,7 @@ impl Marketplace {
             .send()
             .await?;
         
-        let response_data = response.json::<CreateCollectionResp>().await?;
+        let response_data = response.json::<Response<CreateCollectionData>>().await?;
         println!("{:#?}", response_data);
         Ok(response_data.data)
     }
@@ -87,8 +177,155 @@ impl Marketplace {
         data.insert("collection_mint", parent_coll); // parent collection address
 
         let response = client.post(url).headers(headers).json(&data).send().await?;
-        let response_data = response.json::<CreateSubCollectionResp>().await?;
+        let response_data = response.json::<Response<CreateCollectionData>>().await?;
         Ok(response_data.data)
+    }
+
+    async fn solana_mint_nft(&self, payload: GeneralPayload) -> Result<Option<SolanaMintNftResult>, Box<dyn Error>> {
+        let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
+
+        let client = Client::new();
+        let mut url_ = format!("/v1/{}/solana/mint/nft", get_env_name(self.net));
+        let mut url = get_basic_url(self.net) + &url_;
+
+        let data = self.general_payload_to_map(payload);
+        let response = client.post(url).headers(headers).json(&data).send().await?;
+        let response_data = response.json::<Response<SolanaMintNftResult>>().await?;
+
+        Ok(response_data.data)
+    }
+
+    // marketplace list nft
+    async fn listing_nft(&self, mint_address: String, price: f64) -> Result<Option<NftListing>, Box<dyn Error>> {
+        let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
+
+        let client = Client::new();
+        let mut url_ = format!("/v1/{}/solana/marketplace/list", get_env_name(self.net));
+        let mut url = get_basic_url(self.net) + &url_;
+
+        let response = client.post(url).headers(headers).json(&serde_json::json!({
+            "mint_address": mint_address,
+            "price": price,
+        })).send().await?;
+
+        let response_data = response.json::<Response<NftListing>>().await?;
+        Ok(response_data.data)
+    }
+
+    // marketplace buy nft
+    async fn buy_nft(&self, mint_address: String, price: f64) -> Result<Option<NftListing>, Box<dyn Error>> {
+        let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
+
+        let client = Client::new();
+        let mut url_ = format!("/v1/{}/solana/marketplace/buy", get_env_name(self.net));
+        let mut url = get_basic_url(self.net) + &url_;
+
+        let response = client.post(url).headers(headers).json(&serde_json::json!({
+            "mint_address": mint_address,
+            "price": price,
+        })).send().await?;
+
+        let response_data = response.json::<Response<NftListing>>().await?;
+        Ok(response_data.data)
+    }
+
+    // marketplace update nft price
+    async fn update_nft_listing(&self, mint_address: String, price: f64) -> Result<Option<NftListing>, Box<dyn Error>> {
+        let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
+
+        let client = Client::new();
+        let mut url_ = format!("/v1/{}/solana/marketplace/update", get_env_name(self.net));
+        let mut url = get_basic_url(self.net) + &url_;
+
+        let response = client.post(url).headers(headers).json(&serde_json::json!({
+            "mint_address": mint_address,
+            "price": price,
+        })).send().await?;
+
+        let response_data = response.json::<Response<NftListing>>().await?;
+        Ok(response_data.data)
+    }
+
+    // marketplace cancel nft listing
+    async fn cancel_nft_listing(&self, mint_address: String, price: f64) -> Result<Option<NftListing>, Box<dyn Error>> {
+        let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
+
+        let client = Client::new();
+        let mut url_ = format!("/v1/{}/solana/marketplace/cancel", get_env_name(self.net));
+        let mut url = get_basic_url(self.net) + &url_;
+
+        let response = client.post(url).headers(headers).json(&serde_json::json!({
+            "mint_address": mint_address,
+            "price": price,
+        })).send().await?;
+
+        let response_data = response.json::<Response<NftListing>>().await?;
+        Ok(response_data.data)
+    }
+
+    // marketplace transfer nft
+    async fn transfer_nft(&self, mint_address: String, to_wallet_address: String) -> Result<Option<NftListing>, Box<dyn Error>> {
+        let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
+
+        let client = Client::new();
+        let mut url_ = format!("/v1/{}/solana/marketplace/transfer", get_env_name(self.net));
+        let mut url = get_basic_url(self.net) + &url_;
+
+        let response = client.post(url).headers(headers).json(&serde_json::json!({
+            "mint_address": mint_address,
+            "to_wallet_address": to_wallet_address,
+        })).send().await?;
+
+        let response_data = response.json::<Response<NftListing>>().await?;
+        Ok(response_data.data)
+    }
+
+    // fetch nft by mint address
+    async fn fetch_nfts_by_mint_address(&self, mint_address: Vec<String>, limit: usize, offset: usize) -> Result<Option<SolanaNFTExtended>, Box<dyn Error>> {
+        let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
+
+        let client = Client::new();
+        let mut url_ = format!("/v1/{}/solana/nft/mints", get_env_name(self.net));
+        let mut url = get_basic_url(self.net) + &url_;
+
+        let response = client.post(url).headers(headers).json(&serde_json::json!({
+            "mint_address": mint_address,
+            "limit": limit,
+            "offset": offset,
+        })).send().await?;
+
+        let response_data = response.json::<Response<SolanaNFTExtended>>().await?;
+
+        Ok(response_data.data)
+    }
+
+    // fetchNFTsByCreatorAddresses
+    async fn featch_nfts_by_creator_address(&self, creators: Vec<String>, limit: usize, offset: usize) -> Result<Option<SolanaNFTExtended>, Box<dyn Error>> {
+        let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
+
+        let client = Client::new();
+        let mut url_ = format!("/v1/{}/solana/nft/creators", get_env_name(self.net));
+        let mut url = get_basic_url(self.net) + &url_;
+
+        let response = client.post(url).headers(headers).json(&serde_json::json!({
+            "creators": creators,
+            "limit": limit,
+            "offset": offset,
+        })).send().await?;
+
+        let response_data = response.json::<Response<SolanaNFTExtended>>().await?;
+
+        Ok(response_data.data)
+    }
+
+    // mint_sub_collection、mint_nft
+    fn general_payload_to_map(&self, payload: GeneralPayload) -> HashMap<&str, String> {
+        let mut data = HashMap::new();
+        data.insert("name", payload.name);
+        data.insert("symbol", payload.symbol);
+        data.insert("url", payload.url);
+        data.insert("collection_mint", payload.collection_mint); // parent collection address
+        data
     }
 }
 
