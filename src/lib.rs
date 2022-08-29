@@ -7,6 +7,8 @@ pub const RELEASE_REQUEST_URL: &str = "https://api.mirrorworld.fun";
 pub const DEVNET_ENV : &str = "devnet";
 pub const MAINNET_ENV: &str = "mainnet";
 
+pub const X_API_KEY: &str = "";
+
 
 
 #[derive(Copy, Clone)]
