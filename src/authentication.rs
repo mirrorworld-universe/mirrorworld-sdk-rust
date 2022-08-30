@@ -1,7 +1,15 @@
 pub struct Authentication;
 
 use std::collections::HashMap;
+use std::option::Option;
 use reqwest::header::HeaderMap;
+use serde::de::Unexpected::Str;
+use serde::Deserialize;
+use serde::Serialize;
+use serde_json::value::Value;
+use reqwest::Response;
+use std::error::Error;
+
 
 // Completes user signup with email
 
@@ -11,8 +19,18 @@ pub struct LoginWithEmailParam {
    pub password: String,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct LoginWithEmailRes {
+    pub status: String,
+    data: Option<T>,
+    code: u32,
+    message: Option<String>,
+}
+
 #[tokio::main]
-pub async fn login_with_email(payload: LoginWithEmailParam)->Result<reqwest::Response, reqwest::Error>{
+pub async fn login_with_email(payload: LoginWithEmailParam)-> 
+Result<Option<LoginWithEmailRes>, Box<dyn Error>> 
+{
   let mut headers = HeaderMap::new();
   headers.insert("Content-Type", "application/json".parse().unwrap());
   headers.insert("Accept", "application/json".parse().unwrap());
@@ -21,7 +39,7 @@ pub async fn login_with_email(payload: LoginWithEmailParam)->Result<reqwest::Res
   map.insert("code", payload.code.to_string());
   map.insert("email", payload.email.to_string());
   map.insert("password", payload.password.to_string());
-  let  url:String = crate::STAGING_REQUEST_URL.to_string() + &"/v1/auth/complete-signup".to_string();
+  let url:String = crate::STAGING_REQUEST_URL.to_string() + &"/v1/auth/complete-signup".to_string();
   let client = reqwest::Client::new();
   let res = client
         .post(url)
@@ -29,7 +47,10 @@ pub async fn login_with_email(payload: LoginWithEmailParam)->Result<reqwest::Res
         .json(&map)
         .send()
         .await.unwrap();
-  Ok(res)
+  println!("{:?}",res);
+  let p: LoginWithEmailRes= res.json::<Response<LoginWithEmailRes>>().await?;
+      println!("{:?}",p);
+  Ok(p.data)
 }
 
 

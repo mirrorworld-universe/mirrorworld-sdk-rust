@@ -8,6 +8,7 @@ pub const DEVNET_ENV : &str = "devnet";
 pub const MAINNET_ENV: &str = "mainnet";
 
 pub const X_API_KEY: &str = "";
+// pub const authorization: &str = "";
 
 
 
@@ -46,8 +47,13 @@ pub fn get_request_header(api: String, token: String) -> HeaderMap {
     headers
 }
 
-pub mod accessors;
+// pub fn set_authorization(auth: String) {
+//     authorization = auth;
+// }
+// pub fn get_authorization() -> String {
+//     authorization.to_string()
+// }
+
 pub mod authentication;
-pub mod event;
 pub mod marketplace;
 pub mod wallet;
