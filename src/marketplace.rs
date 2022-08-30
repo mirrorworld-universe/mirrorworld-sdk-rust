@@ -4,6 +4,7 @@ use reqwest::{self, Client, Url};
 use std::error::Error;
 use std::collections::HashMap;
 use futures::future::ok;
+use serde::de::Unexpected::Str;
 use serde::Deserialize;
 use serde::Serialize;
 use serde_json::value::Value;
@@ -133,12 +134,70 @@ pub struct SolanaNFTExtended {
     attributes: Vec<MetadataAttribute>,
     listings: Vec<SolanaNFTListing>,
 }
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SolanaNFTAuctionActivity {
+    id: usize,
+    #[serde(rename = "mintAddress")]
+    mint_address: String,
+    #[serde(rename = "txSignature")]
+    tx_signature: String,
+    amount: f32,
+    #[serde(rename = "receiptType")]
+    receipt_type: String,
+    #[serde(rename = "tokenPrice")]
+    token_price: String,
+    #[serde(rename = "blockTimeCreated")]
+    block_time_created: String,
+    #[serde(rename = "blockTimeCanceled")]
+    block_time_canceled: Option<String>,
+    #[serde(rename = "tradeState")]
+    trade_state: String,
+    #[serde(rename = "auctionHouseAddress")]
+    auction_house_address: String,
+    #[serde(rename = "sellerAddress")]
+    seller_address: String,
+    #[serde(rename = "buyerAddress")]
+    buyer_address: Option<String>,
+    metadata: String,
+    #[serde(rename = "blockTime")]
+    block_time: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SolanaNFTTransfersEntity {
+    id: usize,
+    #[serde(rename = "mintAddress")]
+    mint_address: String,
+    #[serde(rename = "txSignature")]
+    tx_signature: String,
+    #[serde(rename = "fromWalletAddress")]
+    from_wallet_address: Option<String>,
+    #[serde(rename = "toWalletAddress")]
+    to_wallet_address: String,
+    amount: f32,
+    #[serde(rename = "blockTime")]
+    block_time: String,
+    slot: usize,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SolanaNFTAuctionActivities {
+    #[serde(rename = "mintAddress")]
+    mint_address: String,
+
+    #[serde(rename = "auctionActivities")]
+    auction_activities: Vec<SolanaNFTAuctionActivity>,
+
+    #[serde(rename = "tokenTransfers")]
+    token_transfers: Vec<SolanaNFTTransfersEntity>,
+}
 
 impl Marketplace {
     fn new(api_key: String, env: NET_ENV, token: String) -> Marketplace {
         Marketplace { api_key: api_key,  net: env, token: token}
     }
 
+    // Create Verified Collection
      async fn create_collection(&self, name: String, symbol: String, metadata_uri: String) -> Result<Option<CreateCollectionData>, Box<dyn Error>> {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
@@ -181,6 +240,7 @@ impl Marketplace {
         Ok(response_data.data)
     }
 
+    // Mint NFT into collection
     async fn solana_mint_nft(&self, payload: GeneralPayload) -> Result<Option<SolanaMintNftResult>, Box<dyn Error>> {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
@@ -195,7 +255,7 @@ impl Marketplace {
         Ok(response_data.data)
     }
 
-    // marketplace list nft
+    // List NFT ion Mirror World Marketplace
     async fn listing_nft(&self, mint_address: String, price: f64) -> Result<Option<NftListing>, Box<dyn Error>> {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
@@ -212,7 +272,7 @@ impl Marketplace {
         Ok(response_data.data)
     }
 
-    // marketplace buy nft
+    // Purchase NFT on Mirror World Marketplace
     async fn buy_nft(&self, mint_address: String, price: f64) -> Result<Option<NftListing>, Box<dyn Error>> {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
@@ -229,7 +289,7 @@ impl Marketplace {
         Ok(response_data.data)
     }
 
-    // marketplace update nft price
+    // Update NFT Listing on Mirror World Marketplace
     async fn update_nft_listing(&self, mint_address: String, price: f64) -> Result<Option<NftListing>, Box<dyn Error>> {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
@@ -246,7 +306,7 @@ impl Marketplace {
         Ok(response_data.data)
     }
 
-    // marketplace cancel nft listing
+    // Cancel listing NFT on Mirror World Marketplace
     async fn cancel_nft_listing(&self, mint_address: String, price: f64) -> Result<Option<NftListing>, Box<dyn Error>> {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
@@ -263,7 +323,7 @@ impl Marketplace {
         Ok(response_data.data)
     }
 
-    // marketplace transfer nft
+    // Transfer NFT from holder's wallet to another address
     async fn transfer_nft(&self, mint_address: String, to_wallet_address: String) -> Result<Option<NftListing>, Box<dyn Error>> {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
@@ -280,7 +340,7 @@ impl Marketplace {
         Ok(response_data.data)
     }
 
-    // fetch nft by mint address
+    // Fetch NFTs By Mint Addresses. Returns a detailed payload of all NFTs whose `mintAddresses`
     async fn fetch_nfts_by_mint_address(&self, mint_address: Vec<String>, limit: usize, offset: usize) -> Result<Option<SolanaNFTExtended>, Box<dyn Error>> {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
@@ -299,8 +359,8 @@ impl Marketplace {
         Ok(response_data.data)
     }
 
-    // fetchNFTsByCreatorAddresses
-    async fn featch_nfts_by_creator_address(&self, creators: Vec<String>, limit: usize, offset: usize) -> Result<Option<SolanaNFTExtended>, Box<dyn Error>> {
+    // Fetch NFTs By Creator Addresses. Returns a detailed payload of all NFTs whose `creatorAddresses`
+    async fn fetch_nfts_by_creator_address(&self, creators: Vec<String>, limit: usize, offset: usize) -> Result<Option<SolanaNFTExtended>, Box<dyn Error>> {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
         let client = Client::new();
@@ -315,6 +375,58 @@ impl Marketplace {
 
         let response_data = response.json::<Response<SolanaNFTExtended>>().await?;
 
+        Ok(response_data.data)
+    }
+
+    // Fetch NFTs By Update Authorities Addresses. Returns a detailed payload of all NFTs whose `updateAuthorities`
+    async fn fetch_nfts_by_update_authorities(&self, update_authorities: Vec<String>, limit: usize, offset: usize) -> Result<Option<SolanaNFTExtended>, Box<dyn Error>> {
+        let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
+
+        let client = Client::new();
+        let mut url_ = format!("/v1/{}/solana/nft/udpate-authorities", get_env_name(self.net));
+        let mut url = get_basic_url(self.net) + &url_;
+
+        let response = client.post(url).headers(headers).json(&serde_json::json!({
+            "update_authorities": update_authorities,
+            "limit": limit,
+            "offset": offset,
+        })).send().await?;
+
+        let response_data = response.json::<Response<SolanaNFTExtended>>().await?;
+
+        Ok(response_data.data)
+    }
+
+    // Fetch NFTs By Owners Addresses. Returns a detailed payload of all NFTs whose `owners`
+    async fn fetch_nfts_by_owner_addresses(&self, addresses: Vec<String>, limit: usize, offset: usize) -> Result<Option<SolanaNFTExtended>, Box<dyn Error>> {
+        let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
+
+        let client = Client::new();
+        let mut url_ = format!("/v1/{}/solana/nft/owners", get_env_name(self.net));
+        let mut url = get_basic_url(self.net) + &url_;
+
+        let response = client.post(url).headers(headers).json(&serde_json::json!({
+            "owners": addresses,
+            "limit": limit,
+            "offset": offset,
+        })).send().await?;
+
+        let response_data = response.json::<Response<SolanaNFTExtended>>().await?;
+
+        Ok(response_data.data)
+    }
+
+    // Fetch Solana NFT Marketplace Activity
+    async fn fetch_nft_marketplace_activity(&self, mint_address: String) -> Result<Option<SolanaNFTAuctionActivities>, Box<dyn Error>>{
+        let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
+
+        let client = Client::new();
+        let mut url_ = format!("/v1/{}/solana/activity/{}", get_env_name(self.net), mint_address);
+        let mut url = get_basic_url(self.net) + &url_;
+
+        let response = client.get(url).headers(headers).send().await?;
+
+        let response_data = response.json::<Response<SolanaNFTAuctionActivities>>().await?;
         Ok(response_data.data)
     }
 
