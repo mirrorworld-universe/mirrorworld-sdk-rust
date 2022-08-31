@@ -171,3 +171,76 @@ async fn test_cancel_nft_listing() {
     assert_eq!(response.unwrap().mint_address, "CYpEG4e88FCWfBoWfSTdNQ6vTJqgnHJPb7sLAY7Rb3M8".to_string())
 }
 
+// test failed
+#[tokio::test]
+async fn test_fetch_nfts_by_creator_addresses() {
+    let m = Marketplace::new(KEY.to_string(), NET_ENV::MAINNET, TOKEN.to_string());
+
+    let mut address = Vec::new();
+    address.push("GCeY1zY2QFz1iYekbsX1jQjtJnjyxWXtBhxAJPrvG3Bg".to_string());
+    // address.push("B2hsVWTFhdz25wNsUrdHpmhTHubLV3wNpiPezGASrggG".to_string());
+
+    let response = m.fetch_nfts_by_creator_address(address, 10, 1).await.unwrap();
+
+    println!("response: {:#?}", response);
+    if response.is_none() {
+        panic!("reaponse id none");
+    }
+
+    assert_eq!(response.unwrap().nfts.len(), 1)
+}
+
+// test failed
+#[tokio::test]
+async fn test_fetch_nfts_by_update_authorities() {
+    let m = Marketplace::new(KEY.to_string(), NET_ENV::MAINNET, TOKEN.to_string());
+
+    let mut address = Vec::new();
+    address.push("4eMGGR6qyvhrSSrHJBjaYkXZpM5kNwbzRQq9q89NfvPC".to_string());
+    // address.push("B2hsVWTFhdz25wNsUrdHpmhTHubLV3wNpiPezGASrggG".to_string());
+
+    let response = m.fetch_nfts_by_update_authorities(address, 10, 1).await.unwrap();
+
+    println!("response: {:#?}", response);
+    if response.is_none() {
+        panic!("reaponse id none");
+    }
+
+    assert_eq!(response.unwrap().nfts.len(), 1)
+}
+
+#[tokio::test]
+async fn test_fetch_nfts_by_owner_address() {
+    let m = Marketplace::new(KEY.to_string(), NET_ENV::DEVNET, TOKEN.to_string());
+
+    let mut address = Vec::new();
+    address.push("H7eoMZiYnX1BdKi5apQSCJLUriL9jbgc8vV9WEar27Ma".to_string());
+    // address.push("B2hsVWTFhdz25wNsUrdHpmhTHubLV3wNpiPezGASrggG".to_string());
+
+    let response = m.fetch_nfts_by_owner_addresses(address, 10, 0).await.unwrap();
+
+    // println!("response: {:#?}", response);
+    if response.is_none() {
+        panic!("reaponse id none");
+    }
+
+    assert_eq!(response.unwrap().nfts.len(), 1)
+}
+
+// test failed
+#[tokio::test]
+async fn test_fetch_nfts_activities() {
+    let m = Marketplace::new(KEY.to_string(), NET_ENV::DEVNET, TOKEN.to_string());
+
+    let address = String::from("B2hsVWTFhdz25wNsUrdHpmhTHubLV3wNpiPezGASrggG");
+    // address.push("B2hsVWTFhdz25wNsUrdHpmhTHubLV3wNpiPezGASrggG".to_string());
+
+    let response = m.fetch_nft_marketplace_activity(address).await.unwrap();
+
+    // println!("response: {:#?}", response);
+    if response.is_none() {
+        panic!("reaponse id none");
+    }
+
+    assert_eq!(response.unwrap().auction_activities.len(), 1)
+}
