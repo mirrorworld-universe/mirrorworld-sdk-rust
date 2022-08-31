@@ -53,7 +53,7 @@ async fn test_mint_nft() {
     let m = Marketplace::new(KEY.to_string(), NET_ENV::DEVNET, TOKEN.to_string());
 
     let payload: GeneralPayload = GeneralPayload{
-        name: String::from("TEST_ASSERT_3"),
+        name: String::from("TEST_ASSERT_4"),
         symbol: "NM_1".to_string(),
         url: "https://market-assets.mirrorworld.fun/gen1/3.json".to_string(),
         collection_mint: "BPZFHm6GCpSjZ4VfvjwmoDTm6vsuJFoWy82uNqVDfXUe".to_string()
@@ -91,7 +91,7 @@ async fn test_fetch_nfts_by_mint_addresses() {
     let m = Marketplace::new(KEY.to_string(), NET_ENV::DEVNET, TOKEN.to_string());
 
     let mut address = Vec::new();
-    address.push("Ev6Q4dbDg87WadKW9ptWBAx936euAZunaiJ1dxgnzTyR".to_string());
+    address.push("B2hsVWTFhdz25wNsUrdHpmhTHubLV3wNpiPezGASrggG".to_string());
     // address.push("B2hsVWTFhdz25wNsUrdHpmhTHubLV3wNpiPezGASrggG".to_string());
 
     let response = m.fetch_nfts_by_mint_address(address, 10, 1).await.unwrap();
@@ -100,4 +100,74 @@ async fn test_fetch_nfts_by_mint_addresses() {
     if response.is_none() {
         panic!("reaponse id none");
     }
+
+    assert_eq!(response.unwrap().nfts.len(), 1)
 }
+
+#[tokio::test]
+async fn test_list_nft() {
+    let m = Marketplace::new(KEY.to_string(), NET_ENV::DEVNET, TOKEN.to_string());
+    let mint_address: String = String::from("CYpEG4e88FCWfBoWfSTdNQ6vTJqgnHJPb7sLAY7Rb3M8");
+    let price: f64 = 0.05;
+
+    let response = m.listing_nft(mint_address, price).await.unwrap();
+
+    println!("response: {:?}", response);
+    if response.is_none() {
+        panic!("response is none");
+    }
+    assert_eq!(response.unwrap().mint_address, "CYpEG4e88FCWfBoWfSTdNQ6vTJqgnHJPb7sLAY7Rb3M8".to_string())
+}
+
+#[tokio::test]
+async fn test_buy_nft() {
+    let m = Marketplace::new(KEY.to_string(), NET_ENV::DEVNET, TOKEN.to_string());
+
+    let mint_address: String = String::from("BPZFHm6GCpSjZ4VfvjwmoDTm6vsuJFoWy82uNqVDfXUe");
+    let price: f64 = 0.05;
+
+    let response = m.buy_nft(mint_address, price).await.unwrap();
+
+    println!("response: {:?}", response);
+    if response.is_none() {
+        panic!("response ios none")
+    }
+
+    assert_eq!(response.unwrap().mint_address, "BPZFHm6GCpSjZ4VfvjwmoDTm6vsuJFoWy82uNqVDfXUe".to_string())
+}
+
+
+#[tokio::test]
+async fn test_update_nft_listing() {
+    let m = Marketplace::new(KEY.to_string(), NET_ENV::DEVNET, TOKEN.to_string());
+
+    let mint_address: String = String::from("BPZFHm6GCpSjZ4VfvjwmoDTm6vsuJFoWy82uNqVDfXUe");
+    let price: f64 = 0.5;
+
+    let response = m.update_nft_listing(mint_address, price).await.unwrap();
+
+    println!("response: {:?}", response);
+    if response.is_none() {
+        panic!("response ios none")
+    }
+
+    assert_eq!(response.unwrap().mint_address, "BPZFHm6GCpSjZ4VfvjwmoDTm6vsuJFoWy82uNqVDfXUe".to_string())
+}
+
+#[tokio::test]
+async fn test_cancel_nft_listing() {
+    let m = Marketplace::new(KEY.to_string(), NET_ENV::DEVNET, TOKEN.to_string());
+
+    let mint_address: String = String::from("CYpEG4e88FCWfBoWfSTdNQ6vTJqgnHJPb7sLAY7Rb3M8");
+    let price: f64 = 0.05;
+
+    let response = m.cancel_nft_listing(mint_address, price).await.unwrap();
+
+    println!("response: {:?}", response);
+    if response.is_none() {
+        panic!("response ios none")
+    }
+
+    assert_eq!(response.unwrap().mint_address, "CYpEG4e88FCWfBoWfSTdNQ6vTJqgnHJPb7sLAY7Rb3M8".to_string())
+}
+
