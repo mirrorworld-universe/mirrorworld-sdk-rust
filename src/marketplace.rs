@@ -3,11 +3,13 @@ use reqwest::header::HeaderMap;
 use reqwest::{self, Client, Url};
 use std::error::Error;
 use std::collections::HashMap;
+use std::fs::OpenOptions;
 use futures::future::ok;
 use serde::de::Unexpected::Str;
 use serde::Deserialize;
 use serde::Serialize;
 use serde_json::value::Value;
+use serde_json::json;
 use crate::{get_basic_url, get_env_name, get_request_header, NET_ENV};
 
 pub struct Marketplace {
@@ -18,7 +20,7 @@ pub struct Marketplace {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Response<T> {
-    status: String,
+    status: Option<String>,
     data: Option<T>,
     code: u32,
     message: Option<String>,
@@ -60,16 +62,19 @@ pub struct SolanaMintNftResult {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct NftListing {
     pub id: usize,
+    #[serde(rename = "type")]
     pub type_name: String,
     pub wallet_address: String,
     pub mint_address: String,
     pub price: String,
     pub seller_address: String,
-    pub to_wallet_address: String,
+    pub to_wallet_address: Option<String>,
     pub signature: String,
     pub status: String,
-    pub update_at: String,
-    pub create_at: String,
+    #[serde(rename = "updatedAt")]
+    pub updated_at: String,
+    #[serde(rename = "createdAt")]
+    pub created_at: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -84,10 +89,34 @@ pub struct Owner {
     pub address: String,
 }
 
+// #[derive(Debug, Serialize, Deserialize, PartialEq)]
+// pub enum Values {
+//     #[serde(rename = "value")]
+//     Text(String),
+//     #[serde(rename = "value")]
+//     Number(i32),
+// }
+
+fn string_or_number<'de, D>(de: D) -> Result<Value, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let helper: Value = Deserialize::deserialize(de)?;
+
+    match helper {
+        Value::Number(n) => {
+            println!("{:#?}", n.as_f64().unwrap().to_string());
+            Ok(Value::Number(n))
+        }
+        Value::String(s) => Ok(json!(s)),
+        _ => Ok(json!(null)),
+    }}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct MetadataAttribute {
     pub trait_type: String,
-    pub value: String,
+    #[serde(deserialize_with = "string_or_number")]
+    pub value: Value,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -109,21 +138,27 @@ pub struct SolanaNFTListing {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+pub struct SolanaNFTs {
+    pub nfts: Vec<SolanaNFTExtended>
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct SolanaNFTExtended {
     pub name: String,
     #[serde(rename = "sellerFeeBasisPoints")]
     pub seller_fee_basic_points: usize,
     #[serde(rename = "updateAuthorityAddress")]
     pub update_authority_address: String,
-    pub description: String,
-    pub image: String,
+    pub description: Option<String>,
+    pub image: Option<String>,
     #[serde(rename = "externalUrl")]
-    pub external_url: String,
+    pub external_url: Option<String>,
     pub creators: Vec<Creator>,
-    pub owner: Owner,
-    pub attributes: Vec<MetadataAttribute>,
-    pub listings: Vec<SolanaNFTListing>,
+    pub owner: Option<Owner>,
+    pub attributes: Option<Vec<MetadataAttribute>>,
+    pub listings: Option<Vec<SolanaNFTListing>>,
 }
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SolanaNFTAuctionActivity {
     pub id: usize,
@@ -261,6 +296,7 @@ impl Marketplace {
         })).send().await?;
 
         let response_data = response.json::<Response<NftListing>>().await?;
+        println!("{:?}", response_data);
         Ok(response_data.data)
     }
 
@@ -278,6 +314,7 @@ impl Marketplace {
         })).send().await?;
 
         let response_data = response.json::<Response<NftListing>>().await?;
+        println!("{:?}", response_data);
         Ok(response_data.data)
     }
 
@@ -312,6 +349,7 @@ impl Marketplace {
         })).send().await?;
 
         let response_data = response.json::<Response<NftListing>>().await?;
+        println!("{:?}", response_data);
         Ok(response_data.data)
     }
 
@@ -334,7 +372,7 @@ impl Marketplace {
     }
 
     // Fetch NFTs By Mint Addresses. Returns a detailed payload of all NFTs whose `mintAddresses`
-    pub async fn fetch_nfts_by_mint_address(&self, mint_address: Vec<String>, limit: usize, offset: usize) -> Result<Option<SolanaNFTExtended>, Box<dyn Error>> {
+    pub async fn fetch_nfts_by_mint_address(&self, mint_address: Vec<String>, limit: usize, offset: usize) -> Result<Option<SolanaNFTs>, Box<dyn Error>> {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
         let client = Client::new();
@@ -342,18 +380,18 @@ impl Marketplace {
         let mut url = get_basic_url(self.net) + &url_;
 
         let response = client.post(url).headers(headers).json(&serde_json::json!({
-            "mint_address": mint_address,
+            "mint_addresses": mint_address,
             "limit": limit,
             "offset": offset,
         })).send().await?;
 
-        let response_data = response.json::<Response<SolanaNFTExtended>>().await?;
+        let response_data = response.json::<Response<SolanaNFTs>>().await?;
         println!("{:#?}", response_data);
         Ok(response_data.data)
     }
 
     // Fetch NFTs By Creator Addresses. Returns a detailed payload of all NFTs whose `creatorAddresses`
-    pub async fn fetch_nfts_by_creator_address(&self, creators: Vec<String>, limit: usize, offset: usize) -> Result<Option<SolanaNFTExtended>, Box<dyn Error>> {
+    pub async fn fetch_nfts_by_creator_address(&self, creators: Vec<String>, limit: usize, offset: usize) -> Result<Option<SolanaNFTs>, Box<dyn Error>> {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
         let client = Client::new();
@@ -366,13 +404,13 @@ impl Marketplace {
             "offset": offset,
         })).send().await?;
 
-        let response_data = response.json::<Response<SolanaNFTExtended>>().await?;
-
+        let response_data = response.json::<Response<SolanaNFTs>>().await?;
+        println!("{:#?}", response_data);
         Ok(response_data.data)
     }
 
     // Fetch NFTs By Update Authorities Addresses. Returns a detailed payload of all NFTs whose `updateAuthorities`
-    pub async fn fetch_nfts_by_update_authorities(&self, update_authorities: Vec<String>, limit: usize, offset: usize) -> Result<Option<SolanaNFTExtended>, Box<dyn Error>> {
+    pub async fn fetch_nfts_by_update_authorities(&self, update_authorities: Vec<String>, limit: usize, offset: usize) -> Result<Option<SolanaNFTs>, Box<dyn Error>> {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
         let client = Client::new();
@@ -385,18 +423,19 @@ impl Marketplace {
             "offset": offset,
         })).send().await?;
 
-        let response_data = response.json::<Response<SolanaNFTExtended>>().await?;
-
+        let response_data = response.json::<Response<SolanaNFTs>>().await?;
+        println!("{:#?}", response_data);
         Ok(response_data.data)
     }
 
     // Fetch NFTs By Owners Addresses. Returns a detailed payload of all NFTs whose `owners`
-    pub async fn fetch_nfts_by_owner_addresses(&self, addresses: Vec<String>, limit: usize, offset: usize) -> Result<Option<SolanaNFTExtended>, Box<dyn Error>> {
+    pub async fn fetch_nfts_by_owner_addresses(&self, addresses: Vec<String>, limit: usize, offset: usize) -> Result<Option<SolanaNFTs>, Box<dyn Error>> {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
         let client = Client::new();
         let mut url_ = format!("/v1/{}/solana/nft/owners", get_env_name(self.net));
         let mut url = get_basic_url(self.net) + &url_;
+        println!("{}", url);
 
         let response = client.post(url).headers(headers).json(&serde_json::json!({
             "owners": addresses,
@@ -404,8 +443,8 @@ impl Marketplace {
             "offset": offset,
         })).send().await?;
 
-        let response_data = response.json::<Response<SolanaNFTExtended>>().await?;
-
+        let response_data = response.json::<Response<SolanaNFTs>>().await?;
+        println!("{:#?}", response_data.data);
         Ok(response_data.data)
     }
 
