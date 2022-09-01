@@ -1,4 +1,3 @@
-use reqwest::Client;
 use reqwest::header::HeaderMap;
 
 pub const STAGING_REQUEST_URL: &str = "https://api-staging.mirrorworld.fun";
@@ -7,8 +6,8 @@ pub const RELEASE_REQUEST_URL: &str = "https://api.mirrorworld.fun";
 pub const DEVNET_ENV : &str = "devnet";
 pub const MAINNET_ENV: &str = "mainnet";
 
-pub const X_API_KEY: &str = "";
-// pub const authorization: &str = "";
+pub const X_API_KEY: &str = "dvriNJlG7ITz1q0S57ZBOAWaDzA3cfjjcnU";
+pub const Authorization: &str = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjAxMSwiZXRoX2FkZHJlc3MiOiJFd0JpeWtoeUd3cm9yeWFxSmltblZmcmdhYUdKdlY5eVlLaGluclV6OG5ZUCIsInNvbF9hZGRyZXNzIjoiRXdCaXlraHlHd3JvcnlhcUppbW5WZnJnYWFHSnZWOXlZS2hpbnJVejhuWVAiLCJlbWFpbCI6ImxpdV95YW5nY2hpbmFAMTI2LmNvbSIsIndhbGxldCI6eyJldGhfYWRkcmVzcyI6IjB4OTFjQ2FFOTU2Mjk3QjFCNTU3ZTJjMzYzZDUzRTZGNkJhMGEwQURFMiIsInNvbF9hZGRyZXNzIjoiRXdCaXlraHlHd3JvcnlhcUppbW5WZnJnYWFHSnZWOXlZS2hpbnJVejhuWVAifSwiY2xpZW50X2lkIjpudWxsLCJpYXQiOjE2NjE5NTcyODYsImV4cCI6MTY2NDU0OTI4NiwianRpIjoiYXV0aDo2MDExIn0.ssaa48nfDzm2e-tDygwY48VUecFj1cKmn0hT5Z1aYFs";
 
 
 
@@ -57,3 +56,5 @@ pub fn get_request_header(api: String, token: String) -> HeaderMap {
 pub mod authentication;
 pub mod marketplace;
 pub mod wallet;
+// pub mod getNftDetailStruct;
+
