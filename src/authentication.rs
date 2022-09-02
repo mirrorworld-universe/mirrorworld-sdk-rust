@@ -60,7 +60,7 @@ Result<Option<Response<LoginWithEmailRes>>, Box<dyn Error>>
   let mut headers = HeaderMap::new();
   headers.insert("Content-Type", "application/json".parse().unwrap());
   headers.insert("Accept", "application/json".parse().unwrap());
-  headers.insert("x-api-key", crate::X_API_KEY.parse().unwrap());
+  headers.insert("x-api-key", crate::getAPIKEY().parse().unwrap());
   let mut map = HashMap::new();
   map.insert("code", payload.code.to_string());
   map.insert("email", payload.email.to_string());
@@ -87,7 +87,7 @@ Result<Option<Response<LoginWithEmailRes>>, Box<dyn Error>>
  let mut headers = HeaderMap::new();
  headers.insert("Content-Type", "application/json".parse().unwrap());
  headers.insert("Accept", "application/json".parse().unwrap());
- headers.insert("x-api-key", crate::X_API_KEY.parse().unwrap());
+ headers.insert("x-api-key", crate::getAPIKEY().parse().unwrap());
  let mut map = HashMap::new();
  map.insert("email", email.to_string());
  let  url:String = crate::STAGING_REQUEST_URL.to_string() + &"/v1/auth/signup".to_string();
@@ -117,7 +117,7 @@ Result<Option<Response<LoginWithEmailRes>>, Box<dyn Error>>
   let mut headers = HeaderMap::new();
   headers.insert("Content-Type", "application/json".parse().unwrap());
   headers.insert("Accept", "application/json".parse().unwrap());
-  headers.insert("x-api-key", crate::X_API_KEY.parse().unwrap());
+  headers.insert("x-api-key", crate::getAPIKEY().parse().unwrap());
   let mut map = HashMap::new();
   map.insert("email", payload.email.to_string());
   map.insert("password", payload.password.to_string());
@@ -141,7 +141,7 @@ Result<Option<Response<LoginWithEmailRes>>, Box<dyn Error>>
       let mut headers = HeaderMap::new();
       headers.insert("Content-Type", "application/json".parse().unwrap());
       headers.insert("Accept", "application/json".parse().unwrap());
-      headers.insert("x-api-key", crate::X_API_KEY.parse().unwrap());
+      headers.insert("x-api-key", crate::getAPIKEY().parse().unwrap());
       let mut map = HashMap::new();
       map.insert("identity_provider_token", identity_provider_token.to_string());
       let  url:String = crate::STAGING_REQUEST_URL.to_string() + &"/v1/auth/google".to_string();
@@ -178,8 +178,8 @@ Result<Option<Response<FetchUser>>, Box<dyn Error>>
  {
   let mut headers = HeaderMap::new();
   headers.insert("Accept", "application/json".parse().unwrap());
-  headers.insert("x-api-key", crate::X_API_KEY.parse().unwrap());
-  headers.insert("authorization", crate::Authorization.parse().unwrap());
+  headers.insert("x-api-key", crate::getAPIKEY().parse().unwrap());
+  headers.insert("authorization", crate::getAuth().parse().unwrap());
   let  url:String = crate::STAGING_REQUEST_URL.to_string() + &"/v1/auth/me".to_string();
   let client = reqwest::Client::new();
   let res = client
@@ -188,7 +188,6 @@ Result<Option<Response<FetchUser>>, Box<dyn Error>>
         .send()
         .await.unwrap();
   let p = res.json::<Response<FetchUser>>().await?;
-  println!("{:?}",p);
   Ok(Some(p))
  }
 
@@ -211,8 +210,8 @@ Result<Option<Response<WalletToken>>, Box<dyn Error>>
  {
   let mut headers = HeaderMap::new();
   headers.insert("Accept", "application/json".parse().unwrap());
-  headers.insert("x-api-key", crate::X_API_KEY.parse().unwrap());
-  headers.insert("authorization", crate::Authorization.parse().unwrap());
+  headers.insert("x-api-key", crate::getAPIKEY().parse().unwrap());
+  headers.insert("authorization", crate::getAuth().parse().unwrap());
   let  url:String = crate::STAGING_REQUEST_URL.to_string() + &"/v1/wallet/tokens".to_string();
   let client = reqwest::Client::new();
   let res = client
@@ -423,8 +422,8 @@ Result<Option<Response<Transactions>>, Box<dyn Error>>
  {
   let mut headers = HeaderMap::new();
   headers.insert("Accept", "application/json".parse().unwrap());
-  headers.insert("x-api-key", crate::X_API_KEY.parse().unwrap());
-  headers.insert("authorization", crate::Authorization.parse().unwrap());
+  headers.insert("x-api-key", crate::getAPIKEY().parse().unwrap());
+  headers.insert("authorization", crate::getAuth().parse().unwrap());
   let  url:String = crate::STAGING_REQUEST_URL.to_string() + &"/v1/wallet/transactions".to_string();
   let client = reqwest::Client::new();
   let res = client
@@ -722,8 +721,8 @@ Result<Option<Response<Transactions>>, Box<dyn Error>>
  {
   let mut headers = HeaderMap::new();
   headers.insert("Accept", "application/json".parse().unwrap());
-  headers.insert("x-api-key", crate::X_API_KEY.parse().unwrap());
-  headers.insert("authorization", crate::Authorization.parse().unwrap());
+  headers.insert("x-api-key", crate::getAPIKEY().parse().unwrap());
+  headers.insert("authorization", crate::getAuth().parse().unwrap());
   let  url:String = crate::STAGING_REQUEST_URL.to_string() + &"/v1/solana/nft/".to_string()+ sol_addr;
   let client = reqwest::Client::new();
   let res = client

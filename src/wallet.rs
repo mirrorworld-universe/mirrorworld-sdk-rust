@@ -1,31 +1,41 @@
 
 use std::collections::HashMap;
 use reqwest::header::HeaderMap;
-pub struct Wallet;
+use std::option::Option;
+use serde::Deserialize;
+use serde::Serialize;
+use std::error::Error;
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Response<T> {
+    pub status: Option<String>,
+    pub data: Option<T>,
+    pub code: Option<u32>,
+    pub message: Option<String>,
+    // pub error: Option<String>,
+}
 
- /**
-   * Transfer SPL token to a recipient
-   */
-// struct Dog {
-//     name: String,
-//     age: i8
-// }
-
+#[derive(Debug, Serialize, Deserialize)]
+pub struct TransferSpltoken  {
+  pub tx_signature: String
+}
 #[tokio::main]
-pub async fn transfer_spltoken(payload:(&str, &str, &str, &str))->Result<reqwest::Response, reqwest::Error>{
+pub async fn transfer_spltoken(payload:(&str, &str, &str, &str))->
+Result<Option<Response<TransferSpltoken>>, Box<dyn Error>> 
+{
   let mut headers = HeaderMap::new();
-  let  authorization:&str = "Bearer";
   headers.insert("Content-Type", "application/json".parse().unwrap());
-  headers.insert("x-api-key", "".parse().unwrap());
-  headers.insert("authorization", authorization.parse().unwrap());
+  headers.insert("Accept", "application/json".parse().unwrap());
+  headers.insert("x-api-key", crate::getAPIKEY().parse().unwrap());
+  headers.insert("authorization", crate::getAuth().parse().unwrap());
   let mut map = HashMap::new();
   let (to_publickey, amount,token_min, decimals ) = payload;
   map.insert("to_publickey", &to_publickey);
   map.insert("amount", &amount);
   map.insert("token_mint", &token_min);
   map.insert("decimals", &decimals);
-  let  url:String = crate::STAGING_REQUEST_URL.to_string() + &"/v1/wallet/transfer-token".to_string();
+  let mut url_ = format!("/v1/{}/wallet/transfer-token", crate::get_network());
+  let url:String = crate::STAGING_REQUEST_URL.to_string() + &url_;
   let client = reqwest::Client::new();
   let res = client
         .post(url)
@@ -33,7 +43,10 @@ pub async fn transfer_spltoken(payload:(&str, &str, &str, &str))->Result<reqwest
         .json(&map)
         .send()
         .await.unwrap();
-  Ok(res)
+  println!("login_with_email_code_response_is_{:?}",res);
+  let p = res.json::<Response<TransferSpltoken>>().await?;
+  println!("login_with_email_code_response_is_{:?}",p);
+  Ok(Some(p))
 }
 
 
@@ -41,18 +54,19 @@ pub async fn transfer_spltoken(payload:(&str, &str, &str, &str))->Result<reqwest
 * Transfer SOL to wallet address
 */
 #[tokio::main]
-pub async fn transfer_sol(payload:(&str, &str))->Result<reqwest::Response, reqwest::Error>{
+pub async fn transfer_sol(payload:(&str, &str))->
+Result<Option<Response<TransferSpltoken>>, Box<dyn Error>> 
+{
   let mut headers = HeaderMap::new();
-  let  authorization:&str = "Bearer";
   headers.insert("Content-Type", "application/json".parse().unwrap());
-  headers.insert("x-api-key", "".parse().unwrap());
-  headers.insert("authorization", authorization.parse().unwrap());
+  headers.insert("x-api-key", crate::getAPIKEY().parse().unwrap());
+  headers.insert("authorization", crate::getAuth().parse().unwrap());
   let mut map = HashMap::new();
   let (to_publickey, amount ) = payload;
   map.insert("to_publickey", &to_publickey);
   map.insert("amount", &amount);
-
-  let  url:String = crate::STAGING_REQUEST_URL.to_string() + &"/v1/wallet/transfer-sol".to_string();
+  let mut url_ = format!("/v1/{}/wallet/transfer-sol", crate::get_network());
+  let url:String = crate::STAGING_REQUEST_URL.to_string() + &url_;
   let client = reqwest::Client::new();
   let res = client
         .post(url)
@@ -60,7 +74,8 @@ pub async fn transfer_sol(payload:(&str, &str))->Result<reqwest::Response, reqwe
         .json(&map)
         .send()
         .await.unwrap();
-  Ok(res)
+  let p = res.json::<Response<TransferSpltoken>>().await?;
+  Ok(Some(p))
 }
 
 

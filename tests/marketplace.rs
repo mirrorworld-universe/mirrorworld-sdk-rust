@@ -3,6 +3,10 @@ use serde::de::Unexpected::Str;
 use serde::Serialize;
 use mirrorworld_sdk_rust::{marketplace::Marketplace, NET_ENV};
 use mirrorworld_sdk_rust::marketplace::GeneralPayload;
+use mirrorworld_sdk_rust::{
+    setConfig
+};
+
 
 extern crate core;
 
