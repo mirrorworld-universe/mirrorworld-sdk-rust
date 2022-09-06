@@ -1,20 +1,24 @@
-use std::borrow::Borrow;
+// use std::borrow::Borrow;
 use reqwest::header::HeaderMap;
-use reqwest::{self, Client, Url};
+use reqwest::{
+    self, 
+    Client, 
+    // Url
+};
 use std::error::Error;
 use std::collections::HashMap;
-use std::fs::OpenOptions;
-use futures::future::ok;
-use serde::de::Unexpected::Str;
+// use std::fs::OpenOptions;
+// use futures::future::ok;
+// use serde::de::Unexpected::Str;
 use serde::Deserialize;
 use serde::Serialize;
 use serde_json::value::Value;
 use serde_json::json;
-use crate::{get_basic_url, get_env_name, get_request_header, NET_ENV};
+use crate::{get_basic_url, get_env_name, get_request_header, NetEnv};
 
 pub struct Marketplace {
     api_key: String,
-    net: NET_ENV,
+    net: NetEnv,
     token: String,
 }
 
@@ -218,7 +222,7 @@ pub struct SolanaNFTAuctionActivities {
 }
 
 impl Marketplace {
-    pub fn new(api_key: String, env: NET_ENV, token: String) -> Marketplace {
+    pub fn new(api_key: String, env: NetEnv, token: String) -> Marketplace {
         Marketplace { api_key,  net: env, token }
     }
 
@@ -227,8 +231,8 @@ impl Marketplace {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
         let client = Client::new();
-        let mut url_ =  format!("/v1/{}/solana/mint/collection", get_env_name(self.net));
-        let mut url = get_basic_url(self.net) + &url_;
+        let  url_ =  format!("/v1/{}/solana/mint/collection", get_env_name(self.net));
+        let  url = get_basic_url(self.net) + &url_;
 
         let mut data = HashMap::new();
         data.insert("name", name);
@@ -251,8 +255,8 @@ impl Marketplace {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
         let client = Client::new();
-        let mut url_ =  format!("/v1/{}/solana/mint/sub-collection", get_env_name(self.net));
-        let mut url = get_basic_url(self.net) + &url_;
+        let url_ =  format!("/v1/{}/solana/mint/sub-collection", get_env_name(self.net));
+        let url = get_basic_url(self.net) + &url_;
 
         let mut data = HashMap::new();
         data.insert("name", name);
@@ -272,8 +276,8 @@ impl Marketplace {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
         let client = Client::new();
-        let mut url_ = format!("/v1/{}/solana/mint/nft", get_env_name(self.net));
-        let mut url = get_basic_url(self.net) + &url_;
+        let url_ = format!("/v1/{}/solana/mint/nft", get_env_name(self.net));
+        let url = get_basic_url(self.net) + &url_;
 
         let data = self.general_payload_to_map(payload);
         let response = client.post(url).headers(headers).json(&data).send().await?;
@@ -287,8 +291,8 @@ impl Marketplace {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
         let client = Client::new();
-        let mut url_ = format!("/v1/{}/solana/marketplace/list", get_env_name(self.net));
-        let mut url = get_basic_url(self.net) + &url_;
+        let url_ = format!("/v1/{}/solana/marketplace/list", get_env_name(self.net));
+        let url = get_basic_url(self.net) + &url_;
 
         let response = client.post(url).headers(headers).json(&serde_json::json!({
             "mint_address": mint_address,
@@ -305,8 +309,8 @@ impl Marketplace {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
         let client = Client::new();
-        let mut url_ = format!("/v1/{}/solana/marketplace/buy", get_env_name(self.net));
-        let mut url = get_basic_url(self.net) + &url_;
+        let url_ = format!("/v1/{}/solana/marketplace/buy", get_env_name(self.net));
+        let url = get_basic_url(self.net) + &url_;
 
         let response = client.post(url).headers(headers).json(&serde_json::json!({
             "mint_address": mint_address,
@@ -323,8 +327,8 @@ impl Marketplace {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
         let client = Client::new();
-        let mut url_ = format!("/v1/{}/solana/marketplace/update", get_env_name(self.net));
-        let mut url = get_basic_url(self.net) + &url_;
+        let url_ = format!("/v1/{}/solana/marketplace/update", get_env_name(self.net));
+        let url = get_basic_url(self.net) + &url_;
 
         let response = client.post(url).headers(headers).json(&serde_json::json!({
             "mint_address": mint_address,
@@ -340,8 +344,8 @@ impl Marketplace {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
         let client = Client::new();
-        let mut url_ = format!("/v1/{}/solana/marketplace/cancel", get_env_name(self.net));
-        let mut url = get_basic_url(self.net) + &url_;
+        let url_ = format!("/v1/{}/solana/marketplace/cancel", get_env_name(self.net));
+        let url = get_basic_url(self.net) + &url_;
 
         let response = client.post(url).headers(headers).json(&serde_json::json!({
             "mint_address": mint_address,
@@ -358,8 +362,8 @@ impl Marketplace {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
         let client = Client::new();
-        let mut url_ = format!("/v1/{}/solana/marketplace/transfer", get_env_name(self.net));
-        let mut url = get_basic_url(self.net) + &url_;
+        let url_ = format!("/v1/{}/solana/marketplace/transfer", get_env_name(self.net));
+        let url = get_basic_url(self.net) + &url_;
 
         let response = client.post(url).headers(headers).json(&serde_json::json!({
             "mint_address": mint_address,
@@ -376,8 +380,8 @@ impl Marketplace {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
         let client = Client::new();
-        let mut url_ = format!("/v1/{}/solana/nft/mints", get_env_name(self.net));
-        let mut url = get_basic_url(self.net) + &url_;
+        let url_ = format!("/v1/{}/solana/nft/mints", get_env_name(self.net));
+        let url = get_basic_url(self.net) + &url_;
 
         let response = client.post(url).headers(headers).json(&serde_json::json!({
             "mint_addresses": mint_address,
@@ -395,8 +399,8 @@ impl Marketplace {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
         let client = Client::new();
-        let mut url_ = format!("/v1/{}/solana/nft/creators", get_env_name(self.net));
-        let mut url = get_basic_url(self.net) + &url_;
+        let url_ = format!("/v1/{}/solana/nft/creators", get_env_name(self.net));
+        let url = get_basic_url(self.net) + &url_;
 
         let response = client.post(url).headers(headers).json(&serde_json::json!({
             "creators": creators,
@@ -414,8 +418,8 @@ impl Marketplace {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
         let client = Client::new();
-        let mut url_ = format!("/v1/{}/solana/nft/udpate-authorities", get_env_name(self.net));
-        let mut url = get_basic_url(self.net) + &url_;
+        let url_ = format!("/v1/{}/solana/nft/udpate-authorities", get_env_name(self.net));
+        let url = get_basic_url(self.net) + &url_;
 
         let response = client.post(url).headers(headers).json(&serde_json::json!({
             "update_authorities": update_authorities,
@@ -433,8 +437,8 @@ impl Marketplace {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
         let client = Client::new();
-        let mut url_ = format!("/v1/{}/solana/nft/owners", get_env_name(self.net));
-        let mut url = get_basic_url(self.net) + &url_;
+        let url_ = format!("/v1/{}/solana/nft/owners", get_env_name(self.net));
+        let url = get_basic_url(self.net) + &url_;
         println!("{}", url);
 
         let response = client.post(url).headers(headers).json(&serde_json::json!({
@@ -453,8 +457,8 @@ impl Marketplace {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
         let client = Client::new();
-        let mut url_ = format!("/v1/{}/solana/activity/{}", get_env_name(self.net), mint_address);
-        let mut url = get_basic_url(self.net) + &url_;
+        let url_ = format!("/v1/{}/solana/activity/{}", get_env_name(self.net), mint_address);
+        let url = get_basic_url(self.net) + &url_;
 
         let response = client.get(url).headers(headers).send().await?;
 

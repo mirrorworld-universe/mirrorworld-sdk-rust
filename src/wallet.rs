@@ -26,15 +26,15 @@ Result<Option<Response<TransferSpltoken>>, Box<dyn Error>>
   let mut headers = HeaderMap::new();
   headers.insert("Content-Type", "application/json".parse().unwrap());
   headers.insert("Accept", "application/json".parse().unwrap());
-  headers.insert("x-api-key", crate::getAPIKEY().parse().unwrap());
-  headers.insert("authorization", crate::getAuth().parse().unwrap());
+  headers.insert("x-api-key", crate::get_apikey().parse().unwrap());
+  headers.insert("authorization", crate::get_auth().parse().unwrap());
   let mut map = HashMap::new();
   let (to_publickey, amount,token_min, decimals ) = payload;
   map.insert("to_publickey", &to_publickey);
   map.insert("amount", &amount);
   map.insert("token_mint", &token_min);
   map.insert("decimals", &decimals);
-  let mut url_ = format!("/v1/{}/wallet/transfer-token", crate::get_network());
+  let url_ = format!("/v1/{}/wallet/transfer-token", crate::get_network());
   let url:String = crate::STAGING_REQUEST_URL.to_string() + &url_;
   let client = reqwest::Client::new();
   let res = client
@@ -59,13 +59,13 @@ Result<Option<Response<TransferSpltoken>>, Box<dyn Error>>
 {
   let mut headers = HeaderMap::new();
   headers.insert("Content-Type", "application/json".parse().unwrap());
-  headers.insert("x-api-key", crate::getAPIKEY().parse().unwrap());
-  headers.insert("authorization", crate::getAuth().parse().unwrap());
+  headers.insert("x-api-key", crate::get_apikey().parse().unwrap());
+  headers.insert("authorization", crate::get_auth().parse().unwrap());
   let mut map = HashMap::new();
   let (to_publickey, amount ) = payload;
   map.insert("to_publickey", &to_publickey);
   map.insert("amount", &amount);
-  let mut url_ = format!("/v1/{}/wallet/transfer-sol", crate::get_network());
+  let url_ = format!("/v1/{}/wallet/transfer-sol", crate::get_network());
   let url:String = crate::STAGING_REQUEST_URL.to_string() + &url_;
   let client = reqwest::Client::new();
   let res = client

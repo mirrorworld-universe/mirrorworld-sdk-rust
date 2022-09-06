@@ -60,7 +60,7 @@ Result<Option<Response<LoginWithEmailRes>>, Box<dyn Error>>
   let mut headers = HeaderMap::new();
   headers.insert("Content-Type", "application/json".parse().unwrap());
   headers.insert("Accept", "application/json".parse().unwrap());
-  headers.insert("x-api-key", crate::getAPIKEY().parse().unwrap());
+  headers.insert("x-api-key", crate::get_apikey().parse().unwrap());
   let mut map = HashMap::new();
   map.insert("code", payload.code.to_string());
   map.insert("email", payload.email.to_string());
@@ -87,7 +87,7 @@ Result<Option<Response<LoginWithEmailRes>>, Box<dyn Error>>
  let mut headers = HeaderMap::new();
  headers.insert("Content-Type", "application/json".parse().unwrap());
  headers.insert("Accept", "application/json".parse().unwrap());
- headers.insert("x-api-key", crate::getAPIKEY().parse().unwrap());
+ headers.insert("x-api-key", crate::get_apikey().parse().unwrap());
  let mut map = HashMap::new();
  map.insert("email", email.to_string());
  let  url:String = crate::STAGING_REQUEST_URL.to_string() + &"/v1/auth/signup".to_string();
@@ -117,7 +117,7 @@ Result<Option<Response<LoginWithEmailRes>>, Box<dyn Error>>
   let mut headers = HeaderMap::new();
   headers.insert("Content-Type", "application/json".parse().unwrap());
   headers.insert("Accept", "application/json".parse().unwrap());
-  headers.insert("x-api-key", crate::getAPIKEY().parse().unwrap());
+  headers.insert("x-api-key", crate::get_apikey().parse().unwrap());
   let mut map = HashMap::new();
   map.insert("email", payload.email.to_string());
   map.insert("password", payload.password.to_string());
@@ -141,7 +141,7 @@ Result<Option<Response<LoginWithEmailRes>>, Box<dyn Error>>
       let mut headers = HeaderMap::new();
       headers.insert("Content-Type", "application/json".parse().unwrap());
       headers.insert("Accept", "application/json".parse().unwrap());
-      headers.insert("x-api-key", crate::getAPIKEY().parse().unwrap());
+      headers.insert("x-api-key", crate::get_apikey().parse().unwrap());
       let mut map = HashMap::new();
       map.insert("identity_provider_token", identity_provider_token.to_string());
       let  url:String = crate::STAGING_REQUEST_URL.to_string() + &"/v1/auth/google".to_string();
@@ -178,8 +178,8 @@ Result<Option<Response<FetchUser>>, Box<dyn Error>>
  {
   let mut headers = HeaderMap::new();
   headers.insert("Accept", "application/json".parse().unwrap());
-  headers.insert("x-api-key", crate::getAPIKEY().parse().unwrap());
-  headers.insert("authorization", crate::getAuth().parse().unwrap());
+  headers.insert("x-api-key", crate::get_apikey().parse().unwrap());
+  headers.insert("authorization", crate::get_auth().parse().unwrap());
   let  url:String = crate::STAGING_REQUEST_URL.to_string() + &"/v1/auth/me".to_string();
   let client = reqwest::Client::new();
   let res = client
@@ -210,8 +210,8 @@ Result<Option<Response<WalletToken>>, Box<dyn Error>>
  {
   let mut headers = HeaderMap::new();
   headers.insert("Accept", "application/json".parse().unwrap());
-  headers.insert("x-api-key", crate::getAPIKEY().parse().unwrap());
-  headers.insert("authorization", crate::getAuth().parse().unwrap());
+  headers.insert("x-api-key", crate::get_apikey().parse().unwrap());
+  headers.insert("authorization", crate::get_auth().parse().unwrap());
   let  url:String = crate::STAGING_REQUEST_URL.to_string() + &"/v1/wallet/tokens".to_string();
   let client = reqwest::Client::new();
   let res = client
@@ -235,7 +235,8 @@ Result<Option<Response<WalletToken>>, Box<dyn Error>>
  }
  #[derive(Debug, Serialize, Deserialize)]
  pub struct Transaction{
-      pub blockTime: Option<String>,
+      #[serde(rename = "blockTime")]
+      pub block_time: Option<String>,
       pub slot: Option<u32>,
       pub meta: Option<Meta>,
       pub transaction: Option<TransactionItem>
@@ -250,10 +251,13 @@ Result<Option<Response<WalletToken>>, Box<dyn Error>>
  
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Message {
-      pub accountKeys: Option<Vec<AccountKeysEntity>>,
-      pub addressTableLookups: Option<String>,
+      #[serde(rename = "accountKeys")]
+      pub account_keys: Option<Vec<AccountKeysEntity>>,
+      #[serde(rename = "addressTableLookups")]
+      pub address_table_lookups: Option<String>,
       pub instructions: Option<Vec<ParsedInstructionEntity>>,
-      pub recentBlockhash: String
+      #[serde(rename = "recentBlockhash")]
+      pub recent_blockhash: String
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -267,7 +271,8 @@ pub struct AccountKeysEntity {
 pub struct ParsedInstructionEntity {
       pub accounts: Option<String>,
       pub data: Option<String>,
-      pub programId: Option<String>,
+      #[serde(rename = "programId")]
+      pub program_id: Option<String>,
       pub parsed: Option<ParsedInstruction>,
       pub program: Option<String>,
 }
@@ -282,66 +287,87 @@ pub struct ParsedInstruction {
 pub struct Info {
       pub account: Option<String>,
       pub mint: Option<String>,
-      pub rentSysvar: Option<String>,
+      #[serde(rename = "rentSysvar")]
+      pub rent_sysvar: Option<String>,
       pub source: Option<String>,
-      pub systemProgram: Option<String>,
-      pub tokenProgram: Option<String>,
+      #[serde(rename = "systemProgram")]
+      pub system_program: Option<String>,
+      #[serde(rename = "tokenProgram")]
+      pub token_program: Option<String>,
       pub wallet: Option<String>,
       pub amount: Option<String>,
       pub authority: Option<String>,
       pub destination: Option<String>,
       pub lamports: Option<u32>,
-      pub tokenAmount: Option<TokenAmount>,
+      #[serde(rename = "tokenAmount")]
+      pub token_amount: Option<TokenAmount>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TokenAmount {
       pub amount: Option<String>,
       pub decimals: Option<u32>,
-      pub uiAmount: Option<u32>,
-      pub uiAmountString: Option<String>,
+      #[serde(rename = "uiAmount")]
+      pub ui_amount: Option<u32>,
+      #[serde(rename = "uiAmountString")]
+      pub ui_amount_string: Option<String>,
 }
 
  #[derive(Debug, Serialize, Deserialize)]
  pub struct Meta {
       pub err: Option<Err>,
       pub fee: u32,
-      pub innerInstructions: Option<InnerInstructionsEntity>,
-      pub loadedAddresses: Option<LoadedAddresses>,
-      pub logMessages: Option<String>,
-      pub postBalances: Option<u32>,
-      pub postTokenBalances: Option<PostTokenBalancesEntity>,
-      pub preBalances: Option<u32>,
-      pub preTokenBalances: Option<PreTokenBalancesEntityOrPostTokenBalancesEntity>,
+      #[serde(rename = "innerInstructions")]
+      pub inner_instructions: Option<InnerInstructionsEntity>,
+      #[serde(rename = "loadedAddresses")]
+      pub loaded_addresses: Option<LoadedAddresses>,
+      #[serde(rename = "logMessages")]
+      pub log_messages: Option<String>,
+      #[serde(rename = "postBalances")]
+      pub post_balances: Option<u32>,
+      #[serde(rename = "postTokenBalances")]
+      pub post_token_balances: Option<PostTokenBalancesEntity>,
+      #[serde(rename = "preBalances")]
+      pub pre_balances: Option<u32>,
+      #[serde(rename = "preTokenBalances")]
+      pub pre_token_balances: Option<PreTokenBalancesEntityOrPostTokenBalancesEntity>,
       pub status: Option<Status>
     }
 
 #[derive(Debug, Serialize, Deserialize)] 
 pub struct Status {
-      pub Ok: Option<String>,
-      pub Err: Option<InstructionError>,
+      #[serde(rename = "Ok")]
+      pub ok: Option<String>,
+      #[serde(rename = "Err")]
+      pub err: Option<InstructionError>,
 }
 
 #[derive(Debug, Serialize, Deserialize)] 
 pub struct InstructionError{
-      pub InstructionError: Option<String>,
+      #[serde(rename = "InstructionError")]
+      pub instruction_error: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)] 
 pub struct PreTokenBalancesEntityOrPostTokenBalancesEntity {
-      pub accountIndex: u32,
+      #[serde(rename = "accountIndex")]
+      pub account_index: u32,
       pub mint: Option<String>,
       pub owner: Option<String>,
-      pub programId: Option<String>,
-      pub uiTokenAmount: UiTokenAmountOrTokenAmount,
+      #[serde(rename = "programId")]
+      pub program_id: Option<String>,
+      #[serde(rename = "uiTokenAmount")]
+      pub ui_token_amount: UiTokenAmountOrTokenAmount,
 }
 
 #[derive(Debug, Serialize, Deserialize)] 
 pub struct UiTokenAmountOrTokenAmount {
       pub amount: Option<String>,
       pub decimals: Option<u32>,
-      pub uiAmount: Option<u32>,
-      pub uiAmountString: Option<String>,
+      #[serde(rename = "uiAmount")]
+      pub ui_amount: Option<u32>,
+      #[serde(rename = "uiAmountString")]
+      pub ui_amount_string: Option<String>,
 }
 #[derive(Debug, Serialize, Deserialize)]
 pub struct LoadedAddresses {
@@ -351,19 +377,24 @@ pub struct LoadedAddresses {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PostTokenBalancesEntity {
-      pub accountIndex: Option<u32>,
+      #[serde(rename = "accountIndex")]
+      pub account_index: Option<u32>,
       pub mint: Option<String>,
       pub owner: Option<String>,
-      pub programId: Option<String>,
-      pub uiTokenAmount: UiTokenAmount,
+      #[serde(rename = "programId")]
+      pub program_id: Option<String>,
+      #[serde(rename = "uiTokenAmount")]
+      pub ui_token_amount: UiTokenAmount,
     }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UiTokenAmount {
       pub amount: String,
       pub decimals: u32,
-      pub uiAmount: Option<u32>,
-      pub uiAmountString: String,
+      #[serde(rename = "uiAmount")]
+      pub ui_amount: Option<u32>,
+      #[serde(rename = "uiAmountString")]
+      pub ui_amount_string: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -376,7 +407,8 @@ pub struct InnerInstructionsEntity {
 pub struct InstructionsEntity {
       pub parsed: Option<Parsed>,
       pub program: Option<String>,
-      pub programId: Option<String>,
+      #[serde(rename = "programId")]
+      pub program_id: Option<String>,
       pub accounts: Option<Vec<String>>,
       pub data: Option<String>,
     }
@@ -394,18 +426,26 @@ pub struct ParsedInfo {
       pub source: Option<String>,
       pub account: Option<String>,
       pub mint: Option<String>,
-      pub rentSysvar: Option<String>,
-      pub systemProgram: Option<String>,
-      pub tokenProgram: Option<String>,
+      #[serde(rename = "rentSysvar")]
+      pub rent_sysvar: Option<String>,
+      #[serde(rename = "systemProgram")]
+      pub system_program: Option<String>,
+      #[serde(rename = "tokenProgram")]
+      pub token_program: Option<String>,
       pub wallet: Option<String>,
-      pub newAccount: Option<String>,
+      #[serde(rename = "newAccount")]
+      pub new_account: Option<String>,
       pub owner: Option<String>,
       pub space: Option<u32>,
       pub amount: Option<String>,
-      pub mintAuthority: Option<String>,
-      pub authorityType: Option<String>,
-      pub multisigAuthority: Option<String>,
-      pub newAuthority: Option<String>,
+      #[serde(rename = "mintAuthority")]
+      pub mint_authority: Option<String>,
+      #[serde(rename = "authorityType")]
+      pub authority_type: Option<String>,
+      #[serde(rename = "multisigAuthority")]
+      pub multisig_authority: Option<String>,
+      #[serde(rename = "newAuthority")]
+      pub new_authority: Option<String>,
       pub signers: Option<Vec<String>>,
       pub decimals: Option<u32>,
       pub authority: Option<String>,
@@ -414,7 +454,8 @@ pub struct ParsedInfo {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Err {
- InstructionError: Option<String>,
+  #[serde(rename = "InstructionError")]
+  pub instruction_error: Option<String>,
 }
 #[tokio::main]
 pub async fn get_transactions()->
@@ -422,8 +463,8 @@ Result<Option<Response<Transactions>>, Box<dyn Error>>
  {
   let mut headers = HeaderMap::new();
   headers.insert("Accept", "application/json".parse().unwrap());
-  headers.insert("x-api-key", crate::getAPIKEY().parse().unwrap());
-  headers.insert("authorization", crate::getAuth().parse().unwrap());
+  headers.insert("x-api-key", crate::get_apikey().parse().unwrap());
+  headers.insert("authorization", crate::get_auth().parse().unwrap());
   let  url:String = crate::STAGING_REQUEST_URL.to_string() + &"/v1/wallet/transactions".to_string();
   let client = reqwest::Client::new();
   let res = client
@@ -440,11 +481,14 @@ Result<Option<Response<Transactions>>, Box<dyn Error>>
  #[derive(Debug, Serialize, Deserialize)]
  pub struct ISolanaNFT {
    pub name: Option<String>,
-   pub sellerFeeBasisPoints: Option<u32>,
-   pub updateAuthorityAddress: Option<String>,
+   #[serde(rename = "sellerFeeBasisPoints")]
+   pub seller_fee_basis_points: Option<u32>,
+   #[serde(rename = "updateAuthorityAddress")]
+   pub update_authority_address: Option<String>,
    pub description: Option<String>,
    pub image: Option<String>,
-   pub externalUrl: Option<String>,
+   #[serde(rename = "externalUrl")]
+   pub external_url: Option<String>,
    pub creators: Option<Vec<Creator>>,
    pub owner: Owner,
    pub attributes: Option<Vec<MetadataAttribute>>,
@@ -473,14 +517,16 @@ Result<Option<Response<Transactions>>, Box<dyn Error>>
  pub struct CreateVerifiedCollectionPayload {
    pub name: Option<String>,
    pub symbol: Option<String>,
-   pub metadataUri: Option<String>,
+   #[serde(rename = "metadataUri")]
+   pub metadata_uri: Option<String>,
  }
  
  #[derive(Debug, Serialize, Deserialize)]
  pub struct ICreateVerifiedCollectionPayload {
    pub name: Option<String>,
    pub symbol: Option<String>,
-   pub metadataUri: Option<String>,
+   #[serde(rename = "metadataUri")]
+   pub metadata_uri: Option<String>,
    pub  url: Option<String>,
  }
  
@@ -488,15 +534,18 @@ Result<Option<Response<Transactions>>, Box<dyn Error>>
  pub struct CreateVerifiedSubCollectionPayload{
    pub name: Option<String>,
    pub symbol: Option<String>,
-   pub metadataUri: Option<String>,
-   pub parentCollection: Option<String>,
+   #[serde(rename = "metadataUri")]
+   pub metadata_uri: Option<String>,
+   #[serde(rename = "parentCollection")]
+   pub parent_collection: Option<String>,
  }
  
  #[derive(Debug, Serialize, Deserialize)]
  pub struct ICreateVerifiedSubCollectionPayload{
    pub name: Option<String>,
    pub symbol: Option<String>,
-   pub metadataUri: Option<String>,
+   #[serde(rename = "metadataUri")]
+   pub metadata_uri: Option<String>,
    pub url: Option<String>,
    pub collection_mint: Option<String>,
  }
@@ -512,7 +561,8 @@ Result<Option<Response<Transactions>>, Box<dyn Error>>
  
  #[derive(Debug, Serialize, Deserialize)]
  pub struct MintNFTPayload{
-   pub metadataUri: Option<String>,
+   #[serde(rename = "metadataUri")]
+   pub metadata_uri: Option<String>,
    pub collection: Option<String>,
    pub collection_mint: Option<String>,
    pub name: Option<String>,
@@ -530,7 +580,6 @@ Result<Option<Response<Transactions>>, Box<dyn Error>>
  pub struct ListNFTPayload {
    pub mint_address: Option<String>,
    pub price: Option<u32>,
-   pub mintAddress: Option<String>,
  }
  
  #[derive(Debug, Serialize, Deserialize)]
@@ -543,7 +592,6 @@ Result<Option<Response<Transactions>>, Box<dyn Error>>
  pub struct UpdateListingPayload {
    pub mint_address: Option<String>,
    pub price: Option<u32>,
-   pub mintAddress: Option<String>,
  }
  
  #[derive(Debug, Serialize, Deserialize)]
@@ -556,7 +604,6 @@ Result<Option<Response<Transactions>>, Box<dyn Error>>
  pub struct BuyNFTPayload  {
    pub mint_address: String,
    pub price: Option<u32>,
-   pub mintAddress: String,
  }
  
  #[derive(Debug, Serialize, Deserialize)]
@@ -569,7 +616,6 @@ Result<Option<Response<Transactions>>, Box<dyn Error>>
  pub struct CancelListingPayload{
    pub mint_address: String,
    pub price: Option<u32>,
-   pub mintAddress: String,
  }
  
  #[derive(Debug, Serialize, Deserialize)]
@@ -580,8 +626,10 @@ Result<Option<Response<Transactions>>, Box<dyn Error>>
  
  #[derive(Debug, Serialize, Deserialize)]
  pub struct TransferNFTPayload {
-   pub mintAddress: String,
-   pub recipientAddress: String,
+   #[serde(rename = "mintAddress")]
+   pub mint_address: Option<String>,
+   #[serde(rename = "recipientAddress")]
+   pub recipient_address: String,
  }
  
  #[derive(Debug, Serialize, Deserialize)]
@@ -607,21 +655,24 @@ Result<Option<Response<Transactions>>, Box<dyn Error>>
  pub struct QueryNFTsByMintAddressesPayload{
    pub limit: Option<u32>,
    pub offset: Option<u32>,
-   pub mintAddresses: Option<Vec<String>>,
+   #[serde(rename = "mintAddresses")]
+   pub mint_addresses: Option<Vec<String>>,
  }
  
  #[derive(Debug, Serialize, Deserialize)]
  pub struct QueryNFTsByCreatorsPayload {
    pub limit: Option<u32>,
    pub offset: Option<u32>,
-   pub creatorAddresses: Option<Vec<String>>,
+   #[serde(rename = "creatorAddresses")]
+   pub creator_addresses: Option<Vec<String>>,
  }
  
  #[derive(Debug, Serialize, Deserialize)]
  pub struct QueryNFTsByUpdateAuthoritiesPayload {
    pub limit: Option<u32>,
    pub offset: Option<u32>,
-   pub updateAuthorities: Option<Vec<String>>,
+   #[serde(rename = "updateAuthorities")]
+   pub update_authorities: Option<Vec<String>>,
  }
  
  #[derive(Debug, Serialize, Deserialize)]
@@ -636,11 +687,14 @@ Result<Option<Response<Transactions>>, Box<dyn Error>>
  #[derive(Debug, Serialize, Deserialize)]
  pub struct SolanaNFTExtended {
    pub name: Option<String>,
-   pub sellerFeeBasisPoints: Option<u32>,
-   pub updateAuthorityAddress: Option<String>,
+   #[serde(rename = "sellerFeeBasisPoints")]
+   pub seller_fee_basis_points: Option<u32>,
+   #[serde(rename = "updateAuthorityAddress")]
+   pub update_authority_address: Option<String>,
    pub description: Option<String>,
    pub image: Option<String>,
-   pub externalUrl: Option<String>,
+   #[serde(rename = "externalUrl")]
+   pub external_url: Option<String>,
    pub creators: Option<Vec<Creator>>,
    pub owner: Owner,
    pub attributes: Option<Vec<MetadataAttributes>>,
@@ -656,50 +710,74 @@ Result<Option<Response<Transactions>>, Box<dyn Error>>
  #[derive(Debug, Serialize, Deserialize)]
  pub struct SolanaNFTListing {
    pub id: Option<u32>,
-   pub tradeState: Option<String>,
+   #[serde(rename = "tradeState")]
+   pub trade_state: Option<String>,
    pub seller: Option<String>,
    pub metadata: Option<String>,
-   pub purchaseId: Option<String>,
+   #[serde(rename = "purchaseId")]
+   pub purchase_id: Option<String>,
    pub price: Option<u32>,
-   pub tokenSize: Option<u32>,
-   pub createdAt: Option<String>,
-   pub canceledAt: Option<String>,
+   #[serde(rename = "tokenSize")]
+   pub token_size: Option<u32>,
+   #[serde(rename = "createdAt")]
+   pub created_at: Option<String>,
+   #[serde(rename = "canceledAt")]
+   pub canceled_at: Option<String>,
  }
  
  #[derive(Debug, Serialize, Deserialize)]
  pub struct SolanaNFTAuctionActivitiesPayload {
-   pub mintAddress: Option<String>,
-   pub auctionActivities: Option<Vec<SolanaNFTAuctionActivity>>,
-   pub tokenTransfers: Option<Vec<SolanaNFTTransfersEntity>>,
+   #[serde(rename = "mintAddress")]
+   pub mint_address: Option<String>,
+   #[serde(rename = "auctionActivities")]
+   pub auction_activities: Option<Vec<SolanaNFTAuctionActivity>>,
+   #[serde(rename = "tokenTransfers")]
+   pub token_transfers: Option<Vec<SolanaNFTTransfersEntity>>,
  }
  
  #[derive(Debug, Serialize, Deserialize)]
  pub struct SolanaNFTAuctionActivity {
    pub id: Option<u32>,
-   pub mintAddress: Option<String>,
-   pub txSignature: Option<String>,
+   #[serde(rename = "mintAddress")]
+   pub mint_address: Option<String>,
+   #[serde(rename = "txSignature")]
+   pub tx_signature: Option<String>,
    pub amount: Option<u32>,
-   pub receiptType: Option<String>,
-   pub tokenPrice: Option<String>,
-   pub blockTimeCreated: Option<String>,
-   pub blockTimeCanceled: Option<String>,
-   pub tradeState: Option<String>,
-   pub auctionHouseAddress: Option<String>,
-   pub sellerAddress: Option<String>,
-   pub buyerAddress: Option<String>,
+   #[serde(rename = "receiptType")]
+   pub receipt_type: Option<String>,
+   #[serde(rename = "tokenPrice")]
+   pub token_price: Option<String>,
+   #[serde(rename = "blockTimeCreated")]
+   pub block_time_created: Option<String>,
+   #[serde(rename = "blockTimeCanceled")]
+   pub block_time_canceled: Option<String>,
+   #[serde(rename = "tradeState")]
+   pub trade_state: Option<String>,
+   #[serde(rename = "auctionHouseAddress")]
+   pub auction_house_address: Option<String>,
+   #[serde(rename = "sellerAddress")]
+   pub seller_address: Option<String>,
+   #[serde(rename = "buyerAddress")]
+   pub buyer_address: Option<String>,
    pub metadata: Option<String>,
-   pub blockTime: Option<String>,
+   #[serde(rename = "blockTime")]
+   pub block_time: Option<String>,
  }
  
  #[derive(Debug, Serialize, Deserialize)]
  pub struct SolanaNFTTransfersEntity {
    pub id: Option<u32>,
-   pub mintAddress: Option<String>,
-   pub txSignature: Option<String>,
-   pub fromWalletAddress: Option<String>,
-   pub toWalletAddress: Option<String>,
+   #[serde(rename = "mintAddress")]
+   pub mint_address: Option<String>,
+   #[serde(rename = "txSignature")]
+   pub tx_signature: Option<String>,
+   #[serde(rename = "fromWalletAddress")]
+   pub from_wallet_address: Option<String>,
+   #[serde(rename = "toWalletAddress")]
+   pub to_wallet_address: Option<String>,
    pub amount: Option<u32>,
-   pub blockTime: Option<String>,
+   #[serde(rename = "blockTime")]
+   pub block_time: Option<String>,
    pub slot: Option<u32>,
  }
  
@@ -721,8 +799,8 @@ Result<Option<Response<Transactions>>, Box<dyn Error>>
  {
   let mut headers = HeaderMap::new();
   headers.insert("Accept", "application/json".parse().unwrap());
-  headers.insert("x-api-key", crate::getAPIKEY().parse().unwrap());
-  headers.insert("authorization", crate::getAuth().parse().unwrap());
+  headers.insert("x-api-key", crate::get_apikey().parse().unwrap());
+  headers.insert("authorization", crate::get_auth().parse().unwrap());
   let  url:String = crate::STAGING_REQUEST_URL.to_string() + &"/v1/solana/nft/".to_string()+ sol_addr;
   let client = reqwest::Client::new();
   let res = client
