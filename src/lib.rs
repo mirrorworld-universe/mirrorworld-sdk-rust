@@ -35,6 +35,13 @@ pub fn set_config(auth_str: &str, key_str: &str) {
     CACHE.lock().unwrap().api_key = key_str.to_string();
     CACHE.lock().unwrap().auth = auth_str.to_string();
 }
+
+pub fn set_auth(auth_str: &str) {
+    CACHE.lock().unwrap().auth = auth_str.to_string();
+}
+pub fn set_apikey(key_str: &str) {
+    CACHE.lock().unwrap().api_key = key_str.to_string();
+}
 pub fn set_network(net: &str) {
     CACHE.lock().unwrap().net = net.to_string();
 }
