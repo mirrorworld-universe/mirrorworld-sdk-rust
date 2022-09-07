@@ -13,17 +13,12 @@ cd mirrorworld-sdk-rust
 cargo run 
 ```
 
-1. test.
+3. test.
 
 ```bash
 cargo test
 ```
 
-Installing rustup on Linux or macOS
-```bash
-https://juejin.cn/post/7108305647287926792
-https://doc.rust-lang.org/book/ch01-01-installation.html
-```
 ## Quick Setup
 ### Install
 ```bash
