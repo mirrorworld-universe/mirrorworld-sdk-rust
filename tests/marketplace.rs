@@ -1,8 +1,9 @@
+use serde::de::Unexpected::Str;
 // use std::borrow::Borrow;
 // use serde::de::Unexpected::Str;
 // use serde::Serialize;
 use mirrorworld_sdk_rust::{marketplace::Marketplace, NetEnv};
-use mirrorworld_sdk_rust::marketplace::GeneralPayload;
+use mirrorworld_sdk_rust::marketplace::MintNftPayload;
 
 
 extern crate core;
@@ -52,14 +53,14 @@ async fn test_create_sub_collection() {
 async fn test_mint_nft() {
     let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
 
-    let payload: GeneralPayload = GeneralPayload{
+    let payload: MintNftPayload = MintNftPayload{
         name: String::from("TEST_ASSERT_4"),
-        symbol: "NM_1".to_string(),
-        url: "https://market-assets.mirrorworld.fun/gen1/3.json".to_string(),
-        collection_mint: "BPZFHm6GCpSjZ4VfvjwmoDTm6vsuJFoWy82uNqVDfXUe".to_string()
+        symbol: String::from("NM_1"),
+        url: String::from("https://market-assets.mirrorworld.fun/gen1/3.json"),
+        collection_mint: String::from("BPZFHm6GCpSjZ4VfvjwmoDTm6vsuJFoWy82uNqVDfXUe")
     };
 
-    let response = m.solana_mint_nft(payload).await.unwrap();
+    let response = m.mint_nft(payload).await.unwrap();
 
     println!("response: {:?}", &response);
     if response.is_none() {
@@ -109,8 +110,9 @@ async fn test_list_nft() {
     let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
     let mint_address: String = String::from("CYpEG4e88FCWfBoWfSTdNQ6vTJqgnHJPb7sLAY7Rb3M8");
     let price: f64 = 0.05;
+    let auction_house: String = String::from("");
 
-    let response = m.listing_nft(mint_address, price).await.unwrap();
+    let response = m.list_nft(mint_address, price, auction_house).await.unwrap();
 
     println!("response: {:?}", response);
     if response.is_none() {
@@ -125,8 +127,9 @@ async fn test_buy_nft() {
 
     let mint_address: String = String::from("BPZFHm6GCpSjZ4VfvjwmoDTm6vsuJFoWy82uNqVDfXUe");
     let price: f64 = 0.05;
+    let auction_house: String = String::from("");
 
-    let response = m.buy_nft(mint_address, price).await.unwrap();
+    let response = m.buy_nft(mint_address, price, auction_house).await.unwrap();
 
     println!("response: {:?}", response);
     if response.is_none() {
@@ -143,8 +146,9 @@ async fn test_update_nft_listing() {
 
     let mint_address: String = String::from("BPZFHm6GCpSjZ4VfvjwmoDTm6vsuJFoWy82uNqVDfXUe");
     let price: f64 = 0.5;
+    let auction_house: String = String::from("");
 
-    let response = m.update_nft_listing(mint_address, price).await.unwrap();
+    let response = m.update_nft_listing(mint_address, price, auction_house).await.unwrap();
 
     println!("response: {:?}", response);
     if response.is_none() {
@@ -160,8 +164,9 @@ async fn test_cancel_nft_listing() {
 
     let mint_address: String = String::from("CYpEG4e88FCWfBoWfSTdNQ6vTJqgnHJPb7sLAY7Rb3M8");
     let price: f64 = 0.05;
+    let auction_house: String = String::from("");
 
-    let response = m.cancel_nft_listing(mint_address, price).await.unwrap();
+    let response = m.cancel_nft_listing(mint_address, price, auction_house).await.unwrap();
 
     println!("response: {:?}", response);
     if response.is_none() {
@@ -225,22 +230,4 @@ async fn test_fetch_nfts_by_owner_address() {
     }
 
     assert_eq!(response.unwrap().nfts.len(), 1)
-}
-
-// test failed
-#[tokio::test]
-async fn test_fetch_nfts_activities() {
-    let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
-
-    let address = String::from("B2hsVWTFhdz25wNsUrdHpmhTHubLV3wNpiPezGASrggG");
-    // address.push("B2hsVWTFhdz25wNsUrdHpmhTHubLV3wNpiPezGASrggG".to_string());
-
-    let response = m.fetch_nft_marketplace_activity(address).await.unwrap();
-
-    // println!("response: {:#?}", response);
-    if response.is_none() {
-        panic!("reaponse id none");
-    }
-
-    assert_eq!(response.unwrap().auction_activities.len(), 1)
 }
