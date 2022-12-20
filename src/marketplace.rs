@@ -7,6 +7,7 @@ use reqwest::{
 };
 use std::error::Error;
 use std::collections::HashMap;
+use std::fmt;
 use std::fmt::format;
 // use std::fs::OpenOptions;
 // use futures::future::ok;
@@ -69,14 +70,24 @@ pub enum SolanaCommitment {
     finalized,
 }
 
+impl fmt::Display for SolanaCommitment {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            SolanaCommitment::confirmed => write!(f, "confirmed"),
+            SolanaCommitment::finalized => write!(f, "finalized"),
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct UpdateNftPayload {
     pub mint_address: String,
+    pub name: String,
     pub update_authority: String,
-    pub confirmation: SolanaCommitment,
+    pub symbol: String,
     pub url: String,
     pub seller_fee_basis_points: usize,
-    #[serde(rename = "metadataUri")]
-    pub metadata_uri: String,
+    pub confirmation: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -101,13 +112,26 @@ pub struct NftDetail {
 pub struct SolanaNFTMintResult {
     pub mint_address: String,
     pub url: String,
-    pub update_authority: string,
-    pub creator_address: string,
-    pub name: string,
-    pub symbol: string,
-    pub collection: string,
-    pub signature: string,
-    pub status: string,
+    pub update_authority: String,
+    pub creator_address: String,
+    pub name: String,
+    pub symbol: String,
+    pub collection: String,
+    pub signature: String,
+    pub status: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SolanaUpdateNftResult {
+    pub mint_address: String,
+    pub url: String,
+    pub update_authority: String,
+    pub creator_address: String,
+    pub name: String,
+    pub symbol: String,
+    pub seller_fee_basis_points: usize,
+    pub signature: String,
+    pub status: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -315,21 +339,16 @@ impl Marketplace {
         Ok(response_data.data)
     }
 
-    pub async fn update_nft(&self, payload: UpdateNftPayload, commitment: SolanaCommitment) -> Result<Option<SolanaNFTMintResult>, Box<dyn Error>> {
+    pub async fn update_nft(&self, payload: UpdateNftPayload) -> Result<Option<SolanaUpdateNftResult>, Box<dyn Error>> {
         let headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
 
         let client = Client::new();
-        let url = format!("/v1/{}/solana/mint/update", get_env_name(self.net));
+        let url_ = format!("/v1/{}/solana/mint/update", get_env_name(self.net));
         let url = get_basic_url(self.net) + &url_;
 
-        // todo 逻辑不对
-        let response = client.post(url).headers(headers).json(&serde_json::json!({
-            "mint_address": mint_address,
-            "price": price,
-            "auction_house": auction_house,
-        })).send().await?;
+        let response = client.post(url).headers(headers).json(&payload).send().await?;
 
-        let response_data = response.json::<Response<SolanaNFTMintResult>>().await?;
+        let response_data = response.json::<Response<SolanaUpdateNftResult>>().await?;
         println!("{:?}", response_data);
         Ok(response_data.data)
 

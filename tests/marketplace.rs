@@ -1,9 +1,10 @@
+use core::panicking::panic;
 use serde::de::Unexpected::Str;
 // use std::borrow::Borrow;
 // use serde::de::Unexpected::Str;
 // use serde::Serialize;
 use mirrorworld_sdk_rust::{marketplace::Marketplace, NetEnv};
-use mirrorworld_sdk_rust::marketplace::MintNftPayload;
+use mirrorworld_sdk_rust::marketplace::{MintNftPayload, SolanaCommitment, UpdateNftPayload};
 
 
 extern crate core;
@@ -230,4 +231,26 @@ async fn test_fetch_nfts_by_owner_address() {
     }
 
     assert_eq!(response.unwrap().nfts.len(), 1)
+}
+
+#[tokio::test]
+async fn test_update_nft() {
+    let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
+
+    let mint_address = String::from("BPZFHm6GCpSjZ4VfvjwmoDTm6vsuJFoWy82uNqVDfXUe");
+
+    let payload = UpdateNftPayload{
+        mint_address,
+        name: String::from("TEST_ASSERT_4"),
+        update_authority: String::from("H7eoMZiYnX1BdKi5apQSCJLUriL9jbgc8vV9WEar27Ma"),
+        symbol: String::from("NM_2"),
+        url: String::from("https://market-assets.mirrorworld.fun/gen1/3.json"),
+        seller_fee_basis_points: 200,
+        confirmation: SolanaCommitment::confirmed.to_string(),
+    };
+    let response = m.update_nft(payload).await.unwrap();
+    if response.is_none() {
+        panic("response error");
+    }
+    assert_eq!(response.unwrap().mint_address, mint_address)
 }
