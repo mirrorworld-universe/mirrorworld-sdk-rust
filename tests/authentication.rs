@@ -1,11 +1,11 @@
 use mirrorworld_sdk_rust::authentication::{
+    // login_google,
+    complete_signup,
     fetch_user,
     get_nft_details,
-    get_token,
+    get_tokens,
     get_transactions,
     login,
-    // login_google,
-    login_with_email,
     signup_email,
     LoginParam,
     LoginWithEmailParam,
@@ -18,7 +18,7 @@ use std::error::Error;
 #[test]
 fn test_login_with_email() {
     set_apikey("PRc53PKAONzxqSyRZnxML3FTLqo5wKS0H3m");
-    let res = login_with_email({
+    let res = complete_signup({
         LoginWithEmailParam {
             email: "liu_yangchina@126.com",
             code: "933620",
@@ -58,10 +58,6 @@ fn test_signup_email() {
 
 #[test]
 fn test_signup() {
-    set_config(
-        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NTk5NiwiZXRoX2FkZHJlc3MiOiJHMWllaTNCV2dSWnNTQjNSaHJzRHdHR2p5QWpyTXpKeUZaWlpuMXQyM3lteCIsInNvbF9hZGRyZXNzIjoiRzFpZWkzQldnUlpzU0IzUmhyc0R3R0dqeUFqck16SnlGWlpabjF0MjN5bXgiLCJlbWFpbCI6ImxpdXlhbmdAcmN0LnN0dWRpbyIsIndhbGxldCI6eyJldGhfYWRkcmVzcyI6IjB4QzhjYTREOTY2OURCQWIzRTBERDI4QmZEMzhhYjdBMTgyN2VDNmNjMyIsInNvbF9hZGRyZXNzIjoiRzFpZWkzQldnUlpzU0IzUmhyc0R3R0dqeUFqck16SnlGWlpabjF0MjN5bXgifSwiY2xpZW50X2lkIjpudWxsLCJpYXQiOjE2NjIwMzA3MjYsImV4cCI6MTY2NDYyMjcyNiwianRpIjoiYXV0aDo1OTk2In0.6uZrZZSMtJY72pwXnYCmKlh5JSs7WfBdQAZoGnDWyuc",
-        "PRc53PKAONzxqSyRZnxML3FTLqo5wKS0H3m"
-    );
     let result = login({
         LoginParam {
             email: "liu_yangchina@126.com",
@@ -107,7 +103,7 @@ fn test_get_token() {
         "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NTk5NiwiZXRoX2FkZHJlc3MiOiJHMWllaTNCV2dSWnNTQjNSaHJzRHdHR2p5QWpyTXpKeUZaWlpuMXQyM3lteCIsInNvbF9hZGRyZXNzIjoiRzFpZWkzQldnUlpzU0IzUmhyc0R3R0dqeUFqck16SnlGWlpabjF0MjN5bXgiLCJlbWFpbCI6ImxpdXlhbmdAcmN0LnN0dWRpbyIsIndhbGxldCI6eyJldGhfYWRkcmVzcyI6IjB4QzhjYTREOTY2OURCQWIzRTBERDI4QmZEMzhhYjdBMTgyN2VDNmNjMyIsInNvbF9hZGRyZXNzIjoiRzFpZWkzQldnUlpzU0IzUmhyc0R3R0dqeUFqck16SnlGWlpabjF0MjN5bXgifSwiY2xpZW50X2lkIjpudWxsLCJpYXQiOjE2NjIwMzA3MjYsImV4cCI6MTY2NDYyMjcyNiwianRpIjoiYXV0aDo1OTk2In0.6uZrZZSMtJY72pwXnYCmKlh5JSs7WfBdQAZoGnDWyuc",
         "PRc53PKAONzxqSyRZnxML3FTLqo5wKS0H3m"
     );
-    let result = get_token();
+    let result = get_tokens();
     let response = if let Ok(Some(response)) = result {
         response
     } else {

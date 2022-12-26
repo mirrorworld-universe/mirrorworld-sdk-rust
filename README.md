@@ -35,7 +35,7 @@ use mirrorworld_sdk_rust::{
     get_token,
     get_transactions,
     login,
-    login_with_email,
+    complete_signup,
     signup_email,
 };
 use mirrorworld_sdk_rust::{
@@ -45,7 +45,7 @@ use mirrorworld_sdk_rust::{
 # set global apikey
 set_apikey("your apikey"); 
 # Completes user signup with email
-let res = login_with_email({
+let res = complete_signup({
     LoginWithEmailParam {
         email: "your email",
         code: "your email code",
