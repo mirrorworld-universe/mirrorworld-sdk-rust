@@ -132,12 +132,13 @@ let payload: GeneralPayload = GeneralPayload{
         url: "your nft metadta uri".to_string(),
         collection_mint: "your collection".to_string()
     };
-let response = market.solana_mint_nft(payload).await.unwrap();
+let response = market.mint_nft(payload).await.unwrap();
 
 // list an nft
 let mint_address: String = String::from("your nft mint address");
 let price: f64 = 0.5; // amount in SOL
-let response = market.listing_nft(mint_address, price).await.unwrap();
+let auction_house: String = String::from(""); // your auction house address
+let response = market.list_nft(mint_address, price, auction_house).await.unwrap();
 
 
 // buy an nft
