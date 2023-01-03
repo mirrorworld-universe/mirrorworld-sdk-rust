@@ -24,7 +24,7 @@ cargo test
 ```bash
 # /Cargo.toml
 [dependencies]
-mirrorworld-sdk-rust = "0.1.2"
+mirrorworld-sdk-rust = "0.1.3"
 ```
 ### Setup
 #### authentication && wallet
