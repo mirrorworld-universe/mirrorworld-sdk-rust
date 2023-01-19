@@ -1,4 +1,4 @@
-use core::panicking::panic;
+// use core::panicking::panic;
 use serde::de::Unexpected::Str;
 // use std::borrow::Borrow;
 // use serde::de::Unexpected::Str;
@@ -250,7 +250,7 @@ async fn test_update_nft() {
     };
     let response = m.update_nft(payload).await.unwrap();
     if response.is_none() {
-        panic("response error");
+        panic!("response error");
     }
-    assert_eq!(response.unwrap().mint_address, mint_address)
+    assert_eq!(response.unwrap().mint_address, "BPZFHm6GCpSjZ4VfvjwmoDTm6vsuJFoWy82uNqVDfXUe".to_string())
 }
