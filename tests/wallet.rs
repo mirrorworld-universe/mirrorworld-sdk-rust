@@ -1,4 +1,4 @@
-use mirrorworld_sdk_rust::wallet::{transfer_sol, transfer_spltoken};
+use mirrorworld_sdk_rust::wallet::{get_tokens, get_transactions, transfer_sol, transfer_spltoken};
 use mirrorworld_sdk_rust::{set_config, set_network};
 
 #[test]
@@ -45,4 +45,27 @@ fn test_transfer_spltoken() {
         todo!()
     };
     assert_eq!(status, "success");
+}
+
+#[test]
+fn test_get_tokens() {
+    set_config(
+        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjMzNSwiZXRoX2FkZHJlc3MiOiIweGYxMTA5RDkzMjM3MkMyOTEwODFEYjgyMjNDRDk5NDQ4YzkxMENhZjAiLCJzb2xfYWRkcmVzcyI6IjNFTDFpNXJ5aUNiWlBEMVhjUk42blZDeHJxdHVKTXE4TlFpSE53ajRRejJYIiwiZW1haWwiOiJzdW5ob254QGdtYWlsLmNvbSIsIndhbGxldCI6eyJldGhfYWRkcmVzcyI6IjB4ZjExMDlEOTMyMzcyQzI5MTA4MURiODIyM0NEOTk0NDhjOTEwQ2FmMCIsInNvbF9hZGRyZXNzIjoiM0VMMWk1cnlpQ2JaUEQxWGNSTjZuVkN4cnF0dUpNcThOUWlITndqNFF6MlgifSwiY2xpZW50X2lkIjpudWxsLCJpYXQiOjE2NzQxMTYzMDUsImV4cCI6MTY3NjcwODMwNSwianRpIjoiYXV0aDo2MzM1In0.3Q3YMZo7ixEZnbgcMB4tEaxQJ8xL-PFe0m22yJ8lYJw",
+        "mw_testSpTASagrppVD7VVM4h0Cs9jSv0RA6iufbxf"
+    );
+    set_network("devnet");
+    let result = get_tokens();
+
+    println!("response:{:?}", result);
+}
+
+#[test]
+fn test_get_transactions() {
+    set_config(
+        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjMzNSwiZXRoX2FkZHJlc3MiOiIweGYxMTA5RDkzMjM3MkMyOTEwODFEYjgyMjNDRDk5NDQ4YzkxMENhZjAiLCJzb2xfYWRkcmVzcyI6IjNFTDFpNXJ5aUNiWlBEMVhjUk42blZDeHJxdHVKTXE4TlFpSE53ajRRejJYIiwiZW1haWwiOiJzdW5ob254QGdtYWlsLmNvbSIsIndhbGxldCI6eyJldGhfYWRkcmVzcyI6IjB4ZjExMDlEOTMyMzcyQzI5MTA4MURiODIyM0NEOTk0NDhjOTEwQ2FmMCIsInNvbF9hZGRyZXNzIjoiM0VMMWk1cnlpQ2JaUEQxWGNSTjZuVkN4cnF0dUpNcThOUWlITndqNFF6MlgifSwiY2xpZW50X2lkIjpudWxsLCJpYXQiOjE2NzQxMTYzMDUsImV4cCI6MTY3NjcwODMwNSwianRpIjoiYXV0aDo2MzM1In0.3Q3YMZo7ixEZnbgcMB4tEaxQJ8xL-PFe0m22yJ8lYJw",
+        "mw_testSpTASagrppVD7VVM4h0Cs9jSv0RA6iufbxf"
+    );
+    set_network("devnet");
+    let result = get_transactions();
+    println!("response:{:?}", result);
 }

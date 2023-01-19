@@ -4,7 +4,7 @@ use std::sync::Mutex;
 
 use reqwest::header::HeaderMap;
 
-pub const STAGING_REQUEST_URL: &str = "https://api.mirrorworld.fun";
+pub const STAGING_REQUEST_URL: &str = "https://api-staging.mirrorworld.fun";
 pub const RELEASE_REQUEST_URL: &str = "https://api.mirrorworld.fun";
 
 pub const DEVNET_ENV: &str = "devnet";
