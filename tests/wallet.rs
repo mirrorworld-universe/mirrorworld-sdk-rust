@@ -2,12 +2,12 @@ use mirrorworld_sdk_rust::wallet::{get_tokens, get_transactions, transfer_sol, t
 use mirrorworld_sdk_rust::{set_config, set_network};
 
 #[test]
-fn test_get_nft_details() {
+fn test_transfer_sol() {
     set_config(
-        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NTk5NiwiZXRoX2FkZHJlc3MiOiJHMWllaTNCV2dSWnNTQjNSaHJzRHdHR2p5QWpyTXpKeUZaWlpuMXQyM3lteCIsInNvbF9hZGRyZXNzIjoiRzFpZWkzQldnUlpzU0IzUmhyc0R3R0dqeUFqck16SnlGWlpabjF0MjN5bXgiLCJlbWFpbCI6ImxpdXlhbmdAcmN0LnN0dWRpbyIsIndhbGxldCI6eyJldGhfYWRkcmVzcyI6IjB4QzhjYTREOTY2OURCQWIzRTBERDI4QmZEMzhhYjdBMTgyN2VDNmNjMyIsInNvbF9hZGRyZXNzIjoiRzFpZWkzQldnUlpzU0IzUmhyc0R3R0dqeUFqck16SnlGWlpabjF0MjN5bXgifSwiY2xpZW50X2lkIjpudWxsLCJpYXQiOjE2NjIwMzA3MjYsImV4cCI6MTY2NDYyMjcyNiwianRpIjoiYXV0aDo1OTk2In0.6uZrZZSMtJY72pwXnYCmKlh5JSs7WfBdQAZoGnDWyuc",
-        "dvriNJlG7ITz1q0S57ZBOAWaDzA3cfjjcnU"
+        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OTcsImV0aF9hZGRyZXNzIjoiMHhBNzc5MEE0MDFmZjA4OWVDMzkzMjJGN2Q4MkQyMWMzRDNCMDVmRDQ0Iiwic29sX2FkZHJlc3MiOiJIN2VvTVppWW5YMUJkS2k1YXBRU0NKTFVyaUw5amJnYzh2VjlXRWFyMjdNYSIsImVtYWlsIjoic3VuaG9uZ3hpYW5nQHJjdC5zdHVkaW8iLCJ3YWxsZXQiOnsiZXRoX2FkZHJlc3MiOiIweEE3NzkwQTQwMWZmMDg5ZUMzOTMyMkY3ZDgyRDIxYzNEM0IwNWZENDQiLCJzb2xfYWRkcmVzcyI6Im5kV292b0dZdjE3QWM0eGVGNm9GdkNQcjJXcmVEYnB6NVM3amNKTEg5VU0ifSwiY2xpZW50X2lkIjpudWxsLCJ0eXBlIjoiYWNjZXNzX3Rva2VuIiwicmVmcmVzaF90b2tlbl9pZCI6MjI2ODMsImlhdCI6MTY3NTA2NDE2NCwiZXhwIjoxNjc3NjU2MTY0LCJqdGkiOiJhdXRoOjk3In0.wYoeC2QPGAqyf5zyXrPzsxe8opRP_oeiQrJbEEpn3bY",
+        "mw_testSpTASagrppVD7VVM4h0Cs9jSv0RA6iufbxf"
     );
-    set_network("mainnet");
+    set_network("devnet");
     let result = transfer_sol(("C64RkD2jnvrFF8mi9FUBwfhNHuuiPuRMzCLRSWcyJKUG", "2"));
     let response = if let Ok(Some(response)) = result {
         response
