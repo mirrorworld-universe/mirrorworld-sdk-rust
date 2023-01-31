@@ -42,6 +42,8 @@ use mirrorworld_sdk_rust::{
     set_config,
     set_apikey,
 };
+use mirrorworld_sdk_rust::wallet::{Wallet};
+
 # set global apikey
 set_apikey("your apikey"); 
 # Completes user signup with email
@@ -59,7 +61,7 @@ let response = if let Ok(Some(response)) = res {
     todo!()
 };
 # Completes user signup with email
-signup_email("liu_yangchina@126.com");
+signup_email("email@example.com");
 
 set_config(
         "your token",
@@ -81,19 +83,29 @@ get_nft_details("nft address");
 
 # wallet
 
+let KEY: &str = "your api key";
+let TOKEN: &str = "your access token";
+
+# init wallet 
+let wallet = Wallet::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
+
 # Transfer Token to another address
-transfer_spltoken((
-        "sol address",
-        amount
-        "sol address",
-        amount
-    ));
+let result = wallet.transfer_spltoken((
+        "to publickey address",
+        "amount"
+        "mint address",
+        "decimals",
+    )).await.unwrap();
+
 
 # Transfer SOL to another address.
-transfer_sol((
-    "sol address", 
-    amount
-));
+let result = wallet.transfer_sol(("to publickey address", "amount")).await.unwrap();
+
+# get wallet tokens
+let result = wallet.get_tokens().await.unwrap();
+
+# get wallet transactions
+let result = wallet.get_transactions().await.unwrap();
 ```
 
 #### marketplace
@@ -117,13 +129,6 @@ if response.is_none() {
 } else {
     // your code
 }
-
-// create a sub collection
-let name: String = String::from("your sub collection");
-let symbol: String = String::from("you sub collection token symbol");
-let uri: String = String::from("your sub collection metadata uri");
-let parent_collection: String = String::from("your parent collection"); // you can got this from the above api
-let response = market.create_sub_collection(name, symbol, uri, parent_collection).await.unwrap();
 
 // mint an nft
 let payload: GeneralPayload = GeneralPayload{
