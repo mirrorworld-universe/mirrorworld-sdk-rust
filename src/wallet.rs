@@ -97,11 +97,9 @@ impl Wallet {
         }
         let x_token = action_token.unwrap().authorization_token.to_string();
         headers.insert("x-authorization-token", x_token.parse().unwrap());
-        println!("headersweq: {:?}", headers.clone());
 
         let url_ = format!("/v1/{}/wallet/transfer-token", get_env_name(self.net));
         let url:String = get_basic_url(self.net) + &url_;
-        println!("url: {:?}", url.clone());
 
         let client = reqwest::Client::new();
         let res = client
@@ -110,9 +108,7 @@ impl Wallet {
             .json(&data)
             .send()
             .await.unwrap();
-        println!("resp1: {:?}", res);
         let resp = res.json::<Response<TransferSpltoken>>().await?;
-        println!("resp: {:?}", resp);
         Ok(resp.data)
     }
 
