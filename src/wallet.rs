@@ -4,8 +4,10 @@ use std::option::Option;
 use serde::Deserialize;
 use serde::Serialize;
 use serde_json::value::Value;
-use serde_json::json;
+use serde_json::{json, Map};
 use std::error::Error;
+use crate::{ActionType, get_basic_url, get_env_name, get_request_header, NetEnv};
+use crate::marketplace::approve_token;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Response<T> {
@@ -62,110 +64,120 @@ pub struct TransactionDetail {
     pub signatures: Vec<String>,
 }
 
-#[tokio::main]
-pub async fn transfer_spltoken(payload:(&str, &str, &str, &str))->
-Result<Option<Response<TransferSpltoken>>, Box<dyn Error>> 
-{
-  let mut headers = HeaderMap::new();
-  headers.insert("Content-Type", "application/json".parse().unwrap());
-  headers.insert("Accept", "application/json".parse().unwrap());
-  headers.insert("x-api-key", crate::get_apikey().parse().unwrap());
-  headers.insert("authorization", crate::get_auth().parse().unwrap());
-  let mut map = HashMap::new();
-  let (to_publickey, amount,token_min, decimals ) = payload;
-  map.insert("to_publickey", &to_publickey);
-  map.insert("amount", &amount);
-  map.insert("token_mint", &token_min);
-  map.insert("decimals", &decimals);
-  let url_ = format!("/v1/{}/wallet/transfer-token", crate::get_network());
-  let url:String = crate::STAGING_REQUEST_URL.to_string() + &url_;
-  let client = reqwest::Client::new();
-  let res = client
-        .post(url)
-        .headers(headers)
-        .json(&map)
-        .send()
-        .await.unwrap();
-  println!("login_with_email_code_response_is_{:?}",res);
-  let p = res.json::<Response<TransferSpltoken>>().await?;
-  println!("login_with_email_code_response_is_{:?}",p);
-  Ok(Some(p))
+pub struct Wallet {
+    api_key: String,
+    net: NetEnv,
+    token: String,
 }
 
+impl Wallet {
+    pub fn new(api_key: String, env: NetEnv, token:String) -> Wallet {
+        Wallet{api_key, net: env, token}
+    }
 
-/**
-* Transfer SOL to wallet address
-*/
-#[tokio::main]
-pub async fn transfer_sol(payload:(&str, &str))->
-Result<Option<Response<TransferSpltoken>>, Box<dyn Error>> 
-{
-  let mut headers = HeaderMap::new();
-  headers.insert("Content-Type", "application/json".parse().unwrap());
-  headers.insert("x-api-key", crate::get_apikey().parse().unwrap());
-  headers.insert("authorization", crate::get_auth().parse().unwrap());
-  let mut map = HashMap::new();
-  let (to_publickey, amount ) = payload;
-  map.insert("to_publickey", &to_publickey);
-  map.insert("amount", &amount);
-  let url_ = format!("/v1/{}/wallet/transfer-sol", crate::get_network());
-  let url:String = crate::STAGING_REQUEST_URL.to_string() + &url_;
-  let client = reqwest::Client::new();
-  let res = client
-        .post(url)
-        .headers(headers)
-        .json(&map)
-        .send()
-        .await.unwrap();
-  let p = res.json::<Response<TransferSpltoken>>().await?;
-  Ok(Some(p))
+    pub async fn transfer_spltoken(&self, payload:(&str, &str, &str, &str))-> Result<Option<TransferSpltoken>, Box<dyn Error>>
+    {
+        let mut headers = get_request_header(self.api_key.to_string(), self.token.to_string());
+
+        let mut data = Map::new();
+        let (to_publickey, amount,token_min, decimals ) = payload;
+        data.insert("to_publickey".to_string(), Value::from(to_publickey));
+        data.insert("amount".to_string(), Value::from(amount));
+        data.insert("token_mint".to_string(), Value::from(token_min));
+        data.insert("decimals".to_string(), Value::from(decimals));
+
+        let action_token = approve_token(
+            ActionType::TRANSFER_SPL_TOKEN,
+            headers.clone(),
+            self.net,
+            data.clone()
+        ).await.unwrap();
+        if action_token.is_none() {
+            println!("auction token is none")
+        }
+        let x_token = action_token.unwrap().authorization_token.to_string();
+        headers.insert("x-authorization-token", x_token.parse().unwrap());
+
+        let url_ = format!("/v1/{}/wallet/transfer-token", get_env_name(self.net));
+        let url:String = get_basic_url(self.net) + &url_;
+
+        let client = reqwest::Client::new();
+        let res = client
+            .post(url)
+            .headers(headers)
+            .json(&data)
+            .send()
+            .await.unwrap();
+        let resp = res.json::<Response<TransferSpltoken>>().await?;
+        Ok(resp.data)
+    }
+
+    pub async fn transfer_sol(&self, payload:(&str, &str))-> Result<Option<TransferSpltoken>, Box<dyn Error>>
+    {
+        let mut headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
+
+        let mut data = Map::new();
+        let (to_publickey, amount ) = payload;
+        data.insert("to_publickey".to_string(), Value::from(to_publickey));
+        data.insert("amount".to_string(), Value::from(amount));
+
+        let action_token = approve_token(
+            ActionType::TRANSFER_SOL,
+            headers.clone(),
+            self.net,
+            data.clone()
+        ).await.unwrap();
+        if action_token.is_none() {
+            panic!("action is none")
+        }
+
+        let x_token = action_token.unwrap().authorization_token.to_string();
+        headers.insert("x-authorization-token", x_token.parse().unwrap());
+
+        let url_ = format!("/v1/{}/wallet/transfer-sol", get_env_name(self.net));
+        let url:String = get_basic_url(self.net) + &url_;
+        let client = reqwest::Client::new();
+        let res = client
+            .post(url)
+            .headers(headers)
+            .json(&data)
+            .send()
+            .await.unwrap();
+        let resp = res.json::<Response<TransferSpltoken>>().await?;
+        Ok(resp.data)
+    }
+
+    pub async fn get_tokens(&self) -> Result<Option<GetSolanaTokens>, Box<dyn Error>> {
+        let mut headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
+
+        let url_ = format!("/v1/{}/wallet/tokens", get_env_name(self.net));
+        let url:String = get_basic_url(self.net) + &url_;
+
+        let client = reqwest::Client::new();
+        let res = client
+            .get(url)
+            .headers(headers)
+            .send()
+            .await.unwrap();
+
+        let resp = res.json::<Response<GetSolanaTokens>>().await?;
+
+        Ok(resp.data)
+    }
+
+    pub async fn get_transactions(&self) -> Result<Option<GetTransactions>, Box<dyn Error>> {
+        let mut headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
+
+        let url_ = format!("/v1/{}/wallet/transactions", get_env_name(self.net));
+        let url:String = get_basic_url(self.net) + &url_;
+        let client = reqwest::Client::new();
+        let res = client
+            .get(url)
+            .headers(headers)
+            .send()
+            .await.unwrap();
+
+        let resp = res.json::<Response<GetTransactions>>().await?;
+        Ok(resp.data)
+    }
 }
-
-#[tokio::main]
-pub async fn get_tokens() -> Result<Option<Response<GetSolanaTokens>>, Box<dyn Error>> {
-    let mut headers = HeaderMap::new();
-    headers.insert("Content-Type", "application/json".parse().unwrap());
-    headers.insert("x-api-key", crate::get_apikey().parse().unwrap());
-    headers.insert("authorization", crate::get_auth().parse().unwrap());
-
-    println!("{:?}", headers);
-
-    let url_ = format!("/v1/{}/wallet/tokens", crate::get_network());
-    let url:String = crate::STAGING_REQUEST_URL.to_string() + &url_;
-
-    println!("{:?}", url);
-    let client = reqwest::Client::new();
-    let res = client
-        .get(url)
-        .headers(headers)
-        .send()
-        .await.unwrap();
-
-    println!("{:?}", res);
-    let p = res.json::<Response<GetSolanaTokens>>().await?;
-
-    Ok(Some(p))
-}
-
-#[tokio::main]
-pub async fn get_transactions() -> Result<Option<Response<GetTransactions>>, Box<dyn Error>> {
-    let mut headers = HeaderMap::new();
-    headers.insert("Content-Type", "application/json".parse().unwrap());
-    headers.insert("x-api-key", crate::get_apikey().parse().unwrap());
-    headers.insert("authorization", crate::get_auth().parse().unwrap());
-
-    let url_ = format!("/v1/{}/wallet/transactions", crate::get_network());
-    let url:String = crate::STAGING_REQUEST_URL.to_string() + &url_;
-    let client = reqwest::Client::new();
-    let res = client
-        .get(url)
-        .headers(headers)
-        .send()
-        .await.unwrap();
-
-    let p = res.json::<Response<GetTransactions>>().await?;
-    Ok(Some(p))
-
-}
-
-

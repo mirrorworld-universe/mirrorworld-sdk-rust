@@ -9,14 +9,17 @@ use mirrorworld_sdk_rust::marketplace::{MintNftPayload, SolanaCommitment, Update
 
 extern crate core;
 
-const KEY: &str = "dvriNJlG7ITz1q0S57ZBOAWaDzA3cfjjcnU";
-const TOKEN: &str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NTk5NiwiZXRoX2FkZHJlc3MiOiJHMWllaTNCV2dSWnNTQjNSaHJzRHdHR2p5QWpyTXpKeUZaWlpuMXQyM3lteCIsInNvbF9hZGRyZXNzIjoiRzFpZWkzQldnUlpzU0IzUmhyc0R3R0dqeUFqck16SnlGWlpabjF0MjN5bXgiLCJlbWFpbCI6ImxpdXlhbmdAcmN0LnN0dWRpbyIsIndhbGxldCI6eyJldGhfYWRkcmVzcyI6IjB4QzhjYTREOTY2OURCQWIzRTBERDI4QmZEMzhhYjdBMTgyN2VDNmNjMyIsInNvbF9hZGRyZXNzIjoiRzFpZWkzQldnUlpzU0IzUmhyc0R3R0dqeUFqck16SnlGWlpabjF0MjN5bXgifSwiY2xpZW50X2lkIjpudWxsLCJpYXQiOjE2NjEzOTY4NzgsImV4cCI6MTY2Mzk4ODg3OCwianRpIjoiYXV0aDo1OTk2In0.DU6-drhby1g3jF4eQm0OILoYQedDc1x7avY_Kpzn2QU";
+const KEY: &str = "mw_testSpTASagrppVD7VVM4h0Cs9jSv0RA6iufbxf";
+const TOKEN: &str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OTcsImV0aF9hZGRyZXNzIjoiMHhBNzc5MEE0MDFmZjA4OWVDMzkzMjJGN2Q4MkQyMWMzRDNCMDVmRDQ0Iiwic29sX2FkZHJlc3MiOiJIN2VvTVppWW5YMUJkS2k1YXBRU0NKTFVyaUw5amJnYzh2VjlXRWFyMjdNYSIsImVtYWlsIjoic3VuaG9uZ3hpYW5nQHJjdC5zdHVkaW8iLCJ3YWxsZXQiOnsiZXRoX2FkZHJlc3MiOiIweEE3NzkwQTQwMWZmMDg5ZUMzOTMyMkY3ZDgyRDIxYzNEM0IwNWZENDQiLCJzb2xfYWRkcmVzcyI6Im5kV292b0dZdjE3QWM0eGVGNm9GdkNQcjJXcmVEYnB6NVM3amNKTEg5VU0ifSwiY2xpZW50X2lkIjpudWxsLCJ0eXBlIjoiYWNjZXNzX3Rva2VuIiwicmVmcmVzaF90b2tlbl9pZCI6MjI2ODMsImlhdCI6MTY3NTA2NDE2NCwiZXhwIjoxNjc3NjU2MTY0LCJqdGkiOiJhdXRoOjk3In0.wYoeC2QPGAqyf5zyXrPzsxe8opRP_oeiQrJbEEpn3bY";
+
+const KEY_2: &str = "dvriNJlG7ITz1q0S57ZBOAWaDzA3cfjjcnU";
+const Token_2: &str = "yJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OTcsImV0aF9hZGRyZXNzIjoiMHhBNzc5MEE0MDFmZjA4OWVDMzkzMjJGN2Q4MkQyMWMzRDNCMDVmRDQ0Iiwic29sX2FkZHJlc3MiOiJIN2VvTVppWW5YMUJkS2k1YXBRU0NKTFVyaUw5amJnYzh2VjlXRWFyMjdNYSIsImVtYWlsIjoic3VuaG9uZ3hpYW5nQHJjdC5zdHVkaW8iLCJ3YWxsZXQiOnsiZXRoX2FkZHJlc3MiOiIweEE3NzkwQTQwMWZmMDg5ZUMzOTMyMkY3ZDgyRDIxYzNEM0IwNWZENDQiLCJzb2xfYWRkcmVzcyI6Im5kV292b0dZdjE3QWM0eGVGNm9GdkNQcjJXcmVEYnB6NVM3amNKTEg5VU0ifSwiY2xpZW50X2lkIjpudWxsLCJ0eXBlIjoiYWNjZXNzX3Rva2VuIiwicmVmcmVzaF90b2tlbl9pZCI6MjI2NzcsImlhdCI6MTY3NTA2MzQ2NSwiZXhwIjoxNjc3NjU1NDY1LCJqdGkiOiJhdXRoOjk3In0.Gb6XatZmzeIi7mZBB_5nbQrr5jSSwpS2NgLVj7Jcu1U";
 
 
 #[tokio::test]
 async fn test_create_collection() {
     let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
-    let name: String = String::from("TEST_ASSERT_0829");
+    let name: String = String::from("TEST_ASSERT_0130");
     let symbol: String = String::from("NM");
     let uri: String = String::from("https://market-assets.mirrorworld.fun/gen1/1.json");
 
@@ -30,35 +33,16 @@ async fn test_create_collection() {
 
 }
 
-#[tokio::test]
-async fn test_create_sub_collection() {
-    let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
-
-    let name: String = String::from("TEST_ASSERT_0829_2");
-    let symbol: String = String::from("NM_1");
-    let uri: String = String::from("https://market-assets.mirrorworld.fun/gen1/1.json");
-    let parent_collection: String = String::from("BPZFHm6GCpSjZ4VfvjwmoDTm6vsuJFoWy82uNqVDfXUe");
-
-    let response = m.create_sub_collection(name, symbol, uri, parent_collection).await.unwrap();
-
-    println!("response: {:?}", response);
-    if response.is_none() {
-        panic!("response is none")
-    }
-
-    assert_eq!(response.unwrap().collection, Some("BPZFHm6GCpSjZ4VfvjwmoDTm6vsuJFoWy82uNqVDfXUe".to_string()))
-}
-
 // test mint nft
 #[tokio::test]
 async fn test_mint_nft() {
     let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
 
     let payload: MintNftPayload = MintNftPayload{
-        name: String::from("TEST_ASSERT_4"),
+        name: String::from("TEST_ASSERT_2"),
         symbol: String::from("NM_1"),
         url: String::from("https://market-assets.mirrorworld.fun/gen1/3.json"),
-        collection_mint: String::from("BPZFHm6GCpSjZ4VfvjwmoDTm6vsuJFoWy82uNqVDfXUe")
+        collection_mint: String::from("C3JcZhy4pywx7YUBP8Y9YBhwFqziAQMjyVnXzNkj7qTa")
     };
 
     let response = m.mint_nft(payload).await.unwrap();
@@ -67,7 +51,7 @@ async fn test_mint_nft() {
     if response.is_none() {
         panic!("response is none")
     }
-    assert_eq!(response.unwrap().collection, "BPZFHm6GCpSjZ4VfvjwmoDTm6vsuJFoWy82uNqVDfXUe".to_string())
+    assert_eq!(response.unwrap().collection, "C3JcZhy4pywx7YUBP8Y9YBhwFqziAQMjyVnXzNkj7qTa".to_string())
 }
 
 // test transfer nft to another wallet
@@ -75,14 +59,14 @@ async fn test_mint_nft() {
 async fn test_transfer_nft() {
     let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
 
-    let mint_address = "B2hsVWTFhdz25wNsUrdHpmhTHubLV3wNpiPezGASrggG";
+    let mint_address = "7QphiCqbf5bw5orPXMwRK6tPUCCf1XNr2MfKqYgodpCA";
     let to_wallet_address = "H7eoMZiYnX1BdKi5apQSCJLUriL9jbgc8vV9WEar27Ma";
 
     let response = m.transfer_nft(mint_address.to_string(), to_wallet_address.to_string()).await.unwrap();
 
     println!("response: {:?}", response);
     if !response.is_none() {
-        assert_eq!(response.unwrap().mint_address, "B2hsVWTFhdz25wNsUrdHpmhTHubLV3wNpiPezGASrggG".to_string())
+        assert_eq!(response.unwrap().mint_address, "GeLUWDzmSCxm6XhNqtvEs3NdrgCkoPZcr7QBEHZ1zyM4".to_string())
     } else {
         println!("err")
     }
@@ -93,7 +77,7 @@ async fn test_fetch_nfts_by_mint_addresses() {
     let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
 
     let mut address = Vec::new();
-    address.push("B2hsVWTFhdz25wNsUrdHpmhTHubLV3wNpiPezGASrggG".to_string());
+    address.push("GeLUWDzmSCxm6XhNqtvEs3NdrgCkoPZcr7QBEHZ1zyM4".to_string());
     // address.push("B2hsVWTFhdz25wNsUrdHpmhTHubLV3wNpiPezGASrggG".to_string());
 
     let response = m.fetch_nfts_by_mint_address(address, 10, 1).await.unwrap();
@@ -109,8 +93,8 @@ async fn test_fetch_nfts_by_mint_addresses() {
 #[tokio::test]
 async fn test_list_nft() {
     let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
-    let mint_address: String = String::from("CYpEG4e88FCWfBoWfSTdNQ6vTJqgnHJPb7sLAY7Rb3M8");
-    let price: f64 = 0.05;
+    let mint_address: String = String::from("GeLUWDzmSCxm6XhNqtvEs3NdrgCkoPZcr7QBEHZ1zyM4");
+    let price: f64 = 0.01;
     let auction_house: String = String::from("");
 
     let response = m.list_nft(mint_address, price, auction_house).await.unwrap();
@@ -119,14 +103,14 @@ async fn test_list_nft() {
     if response.is_none() {
         panic!("response is none");
     }
-    assert_eq!(response.unwrap().mint_address, "CYpEG4e88FCWfBoWfSTdNQ6vTJqgnHJPb7sLAY7Rb3M8".to_string())
+    assert_eq!(response.unwrap().mint_address, "GeLUWDzmSCxm6XhNqtvEs3NdrgCkoPZcr7QBEHZ1zyM4".to_string())
 }
 
 #[tokio::test]
 async fn test_buy_nft() {
     let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
 
-    let mint_address: String = String::from("BPZFHm6GCpSjZ4VfvjwmoDTm6vsuJFoWy82uNqVDfXUe");
+    let mint_address: String = String::from("GeLUWDzmSCxm6XhNqtvEs3NdrgCkoPZcr7QBEHZ1zyM4");
     let price: f64 = 0.05;
     let auction_house: String = String::from("");
 
@@ -137,7 +121,7 @@ async fn test_buy_nft() {
         panic!("response ios none")
     }
 
-    assert_eq!(response.unwrap().mint_address, "BPZFHm6GCpSjZ4VfvjwmoDTm6vsuJFoWy82uNqVDfXUe".to_string())
+    assert_eq!(response.unwrap().mint_address, "GeLUWDzmSCxm6XhNqtvEs3NdrgCkoPZcr7QBEHZ1zyM4".to_string())
 }
 
 
@@ -145,8 +129,8 @@ async fn test_buy_nft() {
 async fn test_update_nft_listing() {
     let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
 
-    let mint_address: String = String::from("BPZFHm6GCpSjZ4VfvjwmoDTm6vsuJFoWy82uNqVDfXUe");
-    let price: f64 = 0.5;
+    let mint_address: String = String::from("GeLUWDzmSCxm6XhNqtvEs3NdrgCkoPZcr7QBEHZ1zyM4");
+    let price: f64 = 0.04;
     let auction_house: String = String::from("");
 
     let response = m.update_nft_listing(mint_address, price, auction_house).await.unwrap();
@@ -156,15 +140,15 @@ async fn test_update_nft_listing() {
         panic!("response ios none")
     }
 
-    assert_eq!(response.unwrap().mint_address, "BPZFHm6GCpSjZ4VfvjwmoDTm6vsuJFoWy82uNqVDfXUe".to_string())
+    assert_eq!(response.unwrap().mint_address, "GeLUWDzmSCxm6XhNqtvEs3NdrgCkoPZcr7QBEHZ1zyM4".to_string())
 }
 
 #[tokio::test]
 async fn test_cancel_nft_listing() {
     let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
 
-    let mint_address: String = String::from("CYpEG4e88FCWfBoWfSTdNQ6vTJqgnHJPb7sLAY7Rb3M8");
-    let price: f64 = 0.05;
+    let mint_address: String = String::from("GeLUWDzmSCxm6XhNqtvEs3NdrgCkoPZcr7QBEHZ1zyM4");
+    let price: f64 = 0.01;
     let auction_house: String = String::from("");
 
     let response = m.cancel_nft_listing(mint_address, price, auction_house).await.unwrap();
@@ -174,7 +158,7 @@ async fn test_cancel_nft_listing() {
         panic!("response ios none")
     }
 
-    assert_eq!(response.unwrap().mint_address, "CYpEG4e88FCWfBoWfSTdNQ6vTJqgnHJPb7sLAY7Rb3M8".to_string())
+    assert_eq!(response.unwrap().mint_address, "GeLUWDzmSCxm6XhNqtvEs3NdrgCkoPZcr7QBEHZ1zyM4".to_string())
 }
 
 // test failed
@@ -237,12 +221,12 @@ async fn test_fetch_nfts_by_owner_address() {
 async fn test_update_nft() {
     let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
 
-    let mint_address = String::from("BPZFHm6GCpSjZ4VfvjwmoDTm6vsuJFoWy82uNqVDfXUe");
+    let mint_address = String::from("GeLUWDzmSCxm6XhNqtvEs3NdrgCkoPZcr7QBEHZ1zyM4");
 
     let payload = UpdateNftPayload{
         mint_address,
-        name: String::from("TEST_ASSERT_4"),
-        update_authority: String::from("H7eoMZiYnX1BdKi5apQSCJLUriL9jbgc8vV9WEar27Ma"),
+        name: String::from("TEST_ASSERT_1"),
+        update_authority: String::from("GCeY1zY2QFz1iYekbsX1jQjtJnjyxWXtBhxAJPrvG3Bg"),
         symbol: String::from("NM_2"),
         url: String::from("https://market-assets.mirrorworld.fun/gen1/3.json"),
         seller_fee_basis_points: 200,
@@ -252,5 +236,5 @@ async fn test_update_nft() {
     if response.is_none() {
         panic!("response error");
     }
-    assert_eq!(response.unwrap().mint_address, "BPZFHm6GCpSjZ4VfvjwmoDTm6vsuJFoWy82uNqVDfXUe".to_string())
+    assert_eq!(response.unwrap().mint_address, "GeLUWDzmSCxm6XhNqtvEs3NdrgCkoPZcr7QBEHZ1zyM4".to_string())
 }
