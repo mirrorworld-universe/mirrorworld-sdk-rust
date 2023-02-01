@@ -17,6 +17,7 @@ pub struct Marketplace {
     api_key: String,
     net: NetEnv,
     token: String,
+    secret_key: String
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -295,13 +296,14 @@ pub async fn approve_token(action_type: ActionType, headers: HeaderMap, env: Net
 
 
 impl Marketplace {
-    pub fn new(api_key: String, env: NetEnv, token: String) -> Marketplace {
-        Marketplace { api_key,  net: env, token }
+    pub fn new(api_key: String, env: NetEnv, token: String, accessSecretKey: String) -> Marketplace {
+        Marketplace { api_key,  net: env, token, secret_key: accessSecretKey }
     }
 
     // Create Verified Collection
      pub async fn create_collection(&self, name: String, symbol: String, metadata_uri: String) -> Result<Option<CreateCollectionData>, Box<dyn Error>> {
         let mut headers = get_request_header(self.api_key.to_string(), self.token.to_string());
+        let mut approve_headers = get_request_header(self.api_key.to_string(), self.secret_key.to_string());
 
         let client = Client::new();
         let  url_ =  format!("/v1/{}/solana/mint/collection", get_env_name(self.net));
@@ -314,7 +316,7 @@ impl Marketplace {
 
         let action_token = approve_token(
             ActionType::CREATE_COLLECTION,
-            headers.clone(),
+            approve_headers.clone(),
             self.net,
             data.clone()
         ).await.unwrap();
@@ -339,6 +341,7 @@ impl Marketplace {
     // Mint NFT into collection
     pub async fn mint_nft(&self, payload: MintNftPayload) -> Result<Option<SolanaMintNftResult>, Box<dyn Error>> {
         let mut headers = get_request_header(self.api_key.to_string(), self.token.to_string());
+        let mut approve_headers = get_request_header(self.api_key.to_string(), self.secret_key.to_string());
 
         let client = Client::new();
         let url_ = format!("/v1/{}/solana/mint/nft", get_env_name(self.net));
@@ -347,7 +350,7 @@ impl Marketplace {
         let data = self.general_payload_to_map(payload);
         let action_token = approve_token(
             ActionType::MINT_NFT,
-            headers.clone(),
+            approve_headers.clone(),
             self.net,
             data.clone()
         ).await.unwrap();
@@ -365,6 +368,7 @@ impl Marketplace {
 
     pub async fn update_nft(&self, payload: UpdateNftPayload) -> Result<Option<SolanaUpdateNftResult>, Box<dyn Error>> {
         let mut headers = get_request_header(self.api_key.to_string(), self.token.to_string());
+        let mut approve_headers = get_request_header(self.api_key.to_string(), self.secret_key.to_string());
 
         let client = Client::new();
         let url_ = format!("/v1/{}/solana/mint/update", get_env_name(self.net));
@@ -373,7 +377,7 @@ impl Marketplace {
         let data = self.update_nft_payload_to_map(payload);
         let action_token = approve_token(
             ActionType::UPDATE_NFT,
-            headers.clone(),
+            approve_headers.clone(),
             self.net,
             data.clone()
         ).await.unwrap();
@@ -394,6 +398,7 @@ impl Marketplace {
     // List NFT ion Mirror World Marketplace
     pub async fn list_nft(&self, mint_address: String, price: f64, auction_house: String) -> Result<Option<NftDetail>, Box<dyn Error>> {
         let mut headers = get_request_header(self.api_key.to_string(), self.token.to_string());
+        let mut approve_headers = get_request_header(self.api_key.to_string(), self.secret_key.to_string());
 
         let client = Client::new();
         let url_ = format!("/v1/{}/solana/marketplace/list", get_env_name(self.net));
@@ -408,7 +413,7 @@ impl Marketplace {
 
         let action_token = approve_token(
             ActionType::LIST_NFT,
-            headers.clone(),
+            approve_headers.clone(),
             self.net,
             data.clone()
         ).await.unwrap();
@@ -425,6 +430,7 @@ impl Marketplace {
     // Purchase NFT on Mirror World Marketplace
     pub async fn buy_nft(&self, mint_address: String, price: f64, auction_house: String) -> Result<Option<NftDetail>, Box<dyn Error>> {
         let mut headers = get_request_header(self.api_key.to_string(), self.token.to_string());
+        let mut approve_headers = get_request_header(self.api_key.to_string(), self.secret_key.to_string());
 
         let client = Client::new();
         let url_ = format!("/v1/{}/solana/marketplace/buy", get_env_name(self.net));
@@ -439,7 +445,7 @@ impl Marketplace {
 
         let action_token = approve_token(
             ActionType::BUY_NFT,
-            headers.clone(),
+            approve_headers.clone(),
             self.net,
             data.clone()
         ).await.unwrap();
@@ -456,6 +462,7 @@ impl Marketplace {
     // Update NFT Listing on Mirror World Marketplace
     pub async fn update_nft_listing(&self, mint_address: String, price: f64, auction_house: String) -> Result<Option<NftDetail>, Box<dyn Error>> {
         let mut headers = get_request_header(self.api_key.to_string(), self.token.to_string());
+        let mut approve_headers = get_request_header(self.api_key.to_string(), self.secret_key.to_string());
 
         let client = Client::new();
         let url_ = format!("/v1/{}/solana/marketplace/update", get_env_name(self.net));
@@ -470,7 +477,7 @@ impl Marketplace {
 
         let action_token = approve_token(
             ActionType::UPDATE_LISTING,
-            headers.clone(),
+            approve_headers.clone(),
             self.net,
             data.clone()
         ).await.unwrap();
@@ -487,6 +494,7 @@ impl Marketplace {
     // Cancel listing NFT on Mirror World Marketplace
     pub async fn cancel_nft_listing(&self, mint_address: String, price: f64, auction_house: String) -> Result<Option<NftDetail>, Box<dyn Error>> {
         let mut headers = get_request_header(self.api_key.to_string(), self.token.to_string());
+        let mut approve_headers = get_request_header(self.api_key.to_string(), self.secret_key.to_string());
 
         let client = Client::new();
         let url_ = format!("/v1/{}/solana/marketplace/cancel", get_env_name(self.net));
@@ -501,7 +509,7 @@ impl Marketplace {
 
         let action_token = approve_token(
             ActionType::CANCEL_LISTING,
-            headers.clone(),
+            approve_headers.clone(),
             self.net,
             data.clone()
         ).await.unwrap();
@@ -518,6 +526,7 @@ impl Marketplace {
     // Transfer NFT from holder's wallet to another address
     pub async fn transfer_nft(&self, mint_address: String, to_wallet_address: String) -> Result<Option<NftDetail>, Box<dyn Error>> {
         let mut headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
+        let mut approve_headers = get_request_header(self.api_key.to_string(), self.secret_key.to_string());
 
         let client = Client::new();
         let url_ = format!("/v1/{}/solana/marketplace/transfer", get_env_name(self.net));
@@ -528,7 +537,7 @@ impl Marketplace {
         data.insert("to_wallet_address".to_string(), Value::String(to_wallet_address));
         let action_token = approve_token(
             ActionType::TRANSFER_NFT,
-            headers.clone(),
+            approve_headers.clone(),
             self.net,
             data.clone()
         ).await.unwrap();

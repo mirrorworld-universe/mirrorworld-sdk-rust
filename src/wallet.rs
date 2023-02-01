@@ -68,16 +68,18 @@ pub struct Wallet {
     api_key: String,
     net: NetEnv,
     token: String,
+    secret_key: String,
 }
 
 impl Wallet {
-    pub fn new(api_key: String, env: NetEnv, token:String) -> Wallet {
-        Wallet{api_key, net: env, token}
+    pub fn new(api_key: String, env: NetEnv, token:String, secretKey: String) -> Wallet {
+        Wallet{api_key, net: env, token, secret_key: secretKey}
     }
 
     pub async fn transfer_spltoken(&self, payload:(&str, &str, &str, &str))-> Result<Option<TransferSpltoken>, Box<dyn Error>>
     {
         let mut headers = get_request_header(self.api_key.to_string(), self.token.to_string());
+        let mut approve_headers = get_request_header(self.api_key.to_string(), self.secret_key.to_string());
 
         let mut data = Map::new();
         let (to_publickey, amount,token_min, decimals ) = payload;
@@ -88,7 +90,7 @@ impl Wallet {
 
         let action_token = approve_token(
             ActionType::TRANSFER_SPL_TOKEN,
-            headers.clone(),
+            approve_headers.clone(),
             self.net,
             data.clone()
         ).await.unwrap();
@@ -115,6 +117,7 @@ impl Wallet {
     pub async fn transfer_sol(&self, payload:(&str, &str))-> Result<Option<TransferSpltoken>, Box<dyn Error>>
     {
         let mut headers:HeaderMap = get_request_header(self.api_key.to_string(), self.token.to_string());
+        let mut approve_headers = get_request_header(self.api_key.to_string(), self.secret_key.to_string());
 
         let mut data = Map::new();
         let (to_publickey, amount ) = payload;
@@ -123,7 +126,7 @@ impl Wallet {
 
         let action_token = approve_token(
             ActionType::TRANSFER_SOL,
-            headers.clone(),
+            approve_headers.clone(),
             self.net,
             data.clone()
         ).await.unwrap();

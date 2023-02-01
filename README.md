@@ -85,9 +85,10 @@ get_nft_details("nft address");
 
 let KEY: &str = "your api key";
 let TOKEN: &str = "your access token";
+let SECRET_KEY: &str = "your secret key"
 
 # init wallet 
-let wallet = Wallet::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
+let wallet = Wallet::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string(), SECRET_KEY.to_string());
 
 # Transfer Token to another address
 let result = wallet.transfer_spltoken((
@@ -115,9 +116,10 @@ use mirrorworld_sdk_rust::marketplace::GeneralPayload;
 
 let KEY: &str = "your api key";
 let TOKEN: &str = "your access token";
+let SECRET_KEY: &str = "your secret key";
 
 // init marketplace object, 
-let market =  Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
+let market =  Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string(), SECRET_KEY.to_string());
 
 // create a collection
 let name: String = String::from("your collection name");
