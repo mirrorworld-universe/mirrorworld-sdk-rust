@@ -9,16 +9,13 @@ use mirrorworld_sdk_rust::marketplace::{MintNftPayload, SolanaCommitment, Update
 
 extern crate core;
 
-const KEY: &str = "mw_testSpTASagrppVD7VVM4h0Cs9jSv0RA6iufbxf";
-const TOKEN: &str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OTcsImV0aF9hZGRyZXNzIjoiMHhBNzc5MEE0MDFmZjA4OWVDMzkzMjJGN2Q4MkQyMWMzRDNCMDVmRDQ0Iiwic29sX2FkZHJlc3MiOiJIN2VvTVppWW5YMUJkS2k1YXBRU0NKTFVyaUw5amJnYzh2VjlXRWFyMjdNYSIsImVtYWlsIjoic3VuaG9uZ3hpYW5nQHJjdC5zdHVkaW8iLCJ3YWxsZXQiOnsiZXRoX2FkZHJlc3MiOiIweEE3NzkwQTQwMWZmMDg5ZUMzOTMyMkY3ZDgyRDIxYzNEM0IwNWZENDQiLCJzb2xfYWRkcmVzcyI6Im5kV292b0dZdjE3QWM0eGVGNm9GdkNQcjJXcmVEYnB6NVM3amNKTEg5VU0ifSwiY2xpZW50X2lkIjpudWxsLCJ0eXBlIjoiYWNjZXNzX3Rva2VuIiwicmVmcmVzaF90b2tlbl9pZCI6MjI2ODMsImlhdCI6MTY3NTA2NDE2NCwiZXhwIjoxNjc3NjU2MTY0LCJqdGkiOiJhdXRoOjk3In0.wYoeC2QPGAqyf5zyXrPzsxe8opRP_oeiQrJbEEpn3bY";
-
-const KEY_2: &str = "dvriNJlG7ITz1q0S57ZBOAWaDzA3cfjjcnU";
-const Token_2: &str = "yJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OTcsImV0aF9hZGRyZXNzIjoiMHhBNzc5MEE0MDFmZjA4OWVDMzkzMjJGN2Q4MkQyMWMzRDNCMDVmRDQ0Iiwic29sX2FkZHJlc3MiOiJIN2VvTVppWW5YMUJkS2k1YXBRU0NKTFVyaUw5amJnYzh2VjlXRWFyMjdNYSIsImVtYWlsIjoic3VuaG9uZ3hpYW5nQHJjdC5zdHVkaW8iLCJ3YWxsZXQiOnsiZXRoX2FkZHJlc3MiOiIweEE3NzkwQTQwMWZmMDg5ZUMzOTMyMkY3ZDgyRDIxYzNEM0IwNWZENDQiLCJzb2xfYWRkcmVzcyI6Im5kV292b0dZdjE3QWM0eGVGNm9GdkNQcjJXcmVEYnB6NVM3amNKTEg5VU0ifSwiY2xpZW50X2lkIjpudWxsLCJ0eXBlIjoiYWNjZXNzX3Rva2VuIiwicmVmcmVzaF90b2tlbl9pZCI6MjI2NzcsImlhdCI6MTY3NTA2MzQ2NSwiZXhwIjoxNjc3NjU1NDY1LCJqdGkiOiJhdXRoOjk3In0.Gb6XatZmzeIi7mZBB_5nbQrr5jSSwpS2NgLVj7Jcu1U";
-
+const KEY: &str = "your api key";
+const TOKEN: &str = "your access token";
+const SECRET_KEY: &str = "your secret key";
 
 #[tokio::test]
 async fn test_create_collection() {
-    let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
+    let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string(), SECRET_KEY.to_string());
     let name: String = String::from("TEST_ASSERT_0130");
     let symbol: String = String::from("NM");
     let uri: String = String::from("https://market-assets.mirrorworld.fun/gen1/1.json");
@@ -36,10 +33,10 @@ async fn test_create_collection() {
 // test mint nft
 #[tokio::test]
 async fn test_mint_nft() {
-    let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
+    let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string(), SECRET_KEY.to_string());
 
     let payload: MintNftPayload = MintNftPayload{
-        name: String::from("TEST_ASSERT_2"),
+        name: String::from("TEST_ASSERT_3"),
         symbol: String::from("NM_1"),
         url: String::from("https://market-assets.mirrorworld.fun/gen1/3.json"),
         collection_mint: String::from("C3JcZhy4pywx7YUBP8Y9YBhwFqziAQMjyVnXzNkj7qTa")
@@ -57,7 +54,7 @@ async fn test_mint_nft() {
 // test transfer nft to another wallet
 #[tokio::test]
 async fn test_transfer_nft() {
-    let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
+    let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string(), SECRET_KEY.to_string());
 
     let mint_address = "7QphiCqbf5bw5orPXMwRK6tPUCCf1XNr2MfKqYgodpCA";
     let to_wallet_address = "H7eoMZiYnX1BdKi5apQSCJLUriL9jbgc8vV9WEar27Ma";
@@ -74,7 +71,7 @@ async fn test_transfer_nft() {
 
 #[tokio::test]
 async fn test_fetch_nfts_by_mint_addresses() {
-    let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
+    let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string(), SECRET_KEY.to_string());
 
     let mut address = Vec::new();
     address.push("GeLUWDzmSCxm6XhNqtvEs3NdrgCkoPZcr7QBEHZ1zyM4".to_string());
@@ -92,7 +89,7 @@ async fn test_fetch_nfts_by_mint_addresses() {
 
 #[tokio::test]
 async fn test_list_nft() {
-    let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
+    let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string(), SECRET_KEY.to_string());
     let mint_address: String = String::from("GeLUWDzmSCxm6XhNqtvEs3NdrgCkoPZcr7QBEHZ1zyM4");
     let price: f64 = 0.01;
     let auction_house: String = String::from("");
@@ -108,7 +105,7 @@ async fn test_list_nft() {
 
 #[tokio::test]
 async fn test_buy_nft() {
-    let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
+    let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string(), SECRET_KEY.to_string());
 
     let mint_address: String = String::from("GeLUWDzmSCxm6XhNqtvEs3NdrgCkoPZcr7QBEHZ1zyM4");
     let price: f64 = 0.05;
@@ -127,7 +124,7 @@ async fn test_buy_nft() {
 
 #[tokio::test]
 async fn test_update_nft_listing() {
-    let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
+    let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string(), SECRET_KEY.to_string());
 
     let mint_address: String = String::from("GeLUWDzmSCxm6XhNqtvEs3NdrgCkoPZcr7QBEHZ1zyM4");
     let price: f64 = 0.04;
@@ -145,7 +142,7 @@ async fn test_update_nft_listing() {
 
 #[tokio::test]
 async fn test_cancel_nft_listing() {
-    let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
+    let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string(), SECRET_KEY.to_string());
 
     let mint_address: String = String::from("GeLUWDzmSCxm6XhNqtvEs3NdrgCkoPZcr7QBEHZ1zyM4");
     let price: f64 = 0.01;
@@ -164,7 +161,7 @@ async fn test_cancel_nft_listing() {
 // test failed
 #[tokio::test]
 async fn test_fetch_nfts_by_creator_addresses() {
-    let m = Marketplace::new(KEY.to_string(), NetEnv::MAINNET, TOKEN.to_string());
+    let m = Marketplace::new(KEY.to_string(), NetEnv::MAINNET, TOKEN.to_string(), SECRET_KEY.to_string());
 
     let mut address = Vec::new();
     address.push("GCeY1zY2QFz1iYekbsX1jQjtJnjyxWXtBhxAJPrvG3Bg".to_string());
@@ -183,7 +180,7 @@ async fn test_fetch_nfts_by_creator_addresses() {
 // test failed
 #[tokio::test]
 async fn test_fetch_nfts_by_update_authorities() {
-    let m = Marketplace::new(KEY.to_string(), NetEnv::MAINNET, TOKEN.to_string());
+    let m = Marketplace::new(KEY.to_string(), NetEnv::MAINNET, TOKEN.to_string(), SECRET_KEY.to_string());
 
     let mut address = Vec::new();
     address.push("4eMGGR6qyvhrSSrHJBjaYkXZpM5kNwbzRQq9q89NfvPC".to_string());
@@ -201,7 +198,7 @@ async fn test_fetch_nfts_by_update_authorities() {
 
 #[tokio::test]
 async fn test_fetch_nfts_by_owner_address() {
-    let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
+    let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string(), SECRET_KEY.to_string());
 
     let mut address = Vec::new();
     address.push("H7eoMZiYnX1BdKi5apQSCJLUriL9jbgc8vV9WEar27Ma".to_string());
@@ -219,7 +216,7 @@ async fn test_fetch_nfts_by_owner_address() {
 
 #[tokio::test]
 async fn test_update_nft() {
-    let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string());
+    let m = Marketplace::new(KEY.to_string(), NetEnv::DEVNET, TOKEN.to_string(), SECRET_KEY.to_string());
 
     let mint_address = String::from("GeLUWDzmSCxm6XhNqtvEs3NdrgCkoPZcr7QBEHZ1zyM4");
 
